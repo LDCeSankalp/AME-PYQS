@@ -446,15 +446,38 @@ async function openBank(code){
       btn.disabled = false;
       return;
     }
+    /* The API returns at most 1,000 rows per request, so ask for the bank in
+       pages until a short page comes back. */
     gateMsg('Loading questions…', 'ok');
-    const { data: rows, error: e2 } = await sb.rpc('fetch_questions',
-      { p_code: code, p_device: dev });
-    if(e2) throw e2;
-    if(!rows || !rows.length){
+    const PAGE = 1000;
+    let rows = [], from = 0;
+    while(true){
+      const { data: page, error: e2 } = await sb
+        .rpc('fetch_questions', { p_code: code, p_device: dev })
+        .range(from, from + PAGE - 1);
+      if(e2) throw e2;
+      if(!page || !page.length) break;
+      rows = rows.concat(page);
+      gateMsg('Loading questions… ' + rows.length, 'ok');
+      if(page.length < PAGE) break;
+      from += PAGE;
+      if(from > 100000) break;              // guard against a runaway loop
+    }
+    if(!rows.length){
       gateMsg('No questions came back. Tell the administrator.', 'err');
       btn.disabled = false;
       return;
     }
+    /* Confirm nothing was lost on the way. */
+    try{
+      const { data: total } = await sb.rpc('question_count',
+        { p_code: code, p_device: dev });
+      if(total && rows.length < total){
+        gateMsg('Loaded ' + rows.length + ' of ' + total +
+                ' questions — check your connection and reload.', 'err');
+      }
+    }catch(e){ /* the count is a nicety, not a requirement */ }
+
     D = rows.map(r => ({
       i: r.id, t: r.topic_key, s: r.sub_topic, p: r.paper_code,
       n: String(r.qno == null ? '' : r.qno),
