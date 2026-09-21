@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AME MCQs by Syllabus Topic — ADME/AWM LDCE</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+:root{
+  --bg:#0b0f1a;--card:#131825;--border:#1e2638;
+  --accent:#f59e0b;--accent2:#3b82f6;--text:#dde3f0;--muted:#6b7793;
+  --correct:#10b981;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;padding-bottom:80px}
+
+header{background:linear-gradient(135deg,#131825,#0b0f1a);border-bottom:2px solid var(--accent);padding:18px 22px 14px;position:sticky;top:0;z-index:100;box-shadow:0 4px 24px rgba(0,0,0,.6)}
+.h1{font-family:'Rajdhani',sans-serif;font-size:1.6rem;font-weight:700;color:var(--accent);letter-spacing:.5px}
+.h2{font-size:.76rem;color:var(--muted);margin-top:3px}
+.stats{display:flex;gap:9px;flex-wrap:wrap;margin-top:10px}
+.stat{background:#1a2035;border:1px solid var(--border);border-radius:7px;padding:4px 12px;font-size:.74rem;color:var(--muted)}
+.stat b{color:var(--accent);font-size:.9rem}
+
+.ctrl{padding:10px 22px;background:#0f1520;border-bottom:1px solid var(--border);display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.srch{flex:1;min-width:190px;background:#1a2035;border:1px solid var(--border);border-radius:7px;padding:7px 12px;color:var(--text);font-size:.81rem;font-family:'Inter',sans-serif;outline:none}
+.srch:focus{border-color:var(--accent)}
+select.sel{background:#1a2035;border:1px solid var(--border);border-radius:7px;padding:7px 10px;color:var(--text);font-size:.78rem;font-family:'Inter',sans-serif;outline:none;cursor:pointer;max-width:230px}
+.tgl{padding:6px 12px;border-radius:7px;border:1px solid var(--border);background:#1a2035;color:var(--muted);font-size:.76rem;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap}
+.tgl.on{border-color:var(--accent);color:var(--accent);background:#2a1f06}
+
+.chips{padding:9px 22px;background:#0d1320;border-bottom:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap}
+.fb{padding:4px 11px;border-radius:18px;border:1px solid var(--border);background:#1a2035;color:var(--muted);font-size:.71rem;cursor:pointer;transition:all .16s;font-family:'Inter',sans-serif;white-space:nowrap}
+.fb em{font-style:normal;opacity:.6;font-size:.66rem;margin-left:3px}
+.fb:hover{border-color:var(--c,var(--accent));color:var(--c,var(--accent))}
+.fb.on{border-color:var(--c,var(--accent));color:var(--c,var(--accent));background:#161d2e;font-weight:600}
+.fb.all{--c:#f59e0b}
+
+.ps{margin:16px 22px 0}
+.ph{display:flex;align-items:center;gap:10px;background:#131825;border:1px solid var(--border);border-left:3px solid var(--pc,var(--accent2));border-radius:8px 8px 0 0;padding:10px 16px;cursor:pointer;user-select:none}
+.ph:hover{background:#18202e}
+.pt{font-family:'Rajdhani',sans-serif;font-size:1.06rem;font-weight:700;color:var(--pc,var(--accent2))}
+.psec{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.pc{margin-left:auto;background:var(--pc,var(--accent2));color:#0b0f1a;border-radius:12px;padding:2px 9px;font-size:.7rem;font-weight:700}
+.pb{display:block}.pb.col{display:none}
+.chv{transition:transform .2s;color:var(--muted);font-size:.7rem}.chcol .chv{transform:rotate(-90deg)}
+
+/* sub-topic band */
+.sh{display:flex;align-items:center;gap:8px;background:#0f1726;border:1px solid var(--border);border-top:none;border-left:3px solid var(--pc,var(--accent2));padding:7px 16px 7px 14px;cursor:pointer;user-select:none}
+.sh:hover{background:#141d2f}
+.st{font-size:.8rem;font-weight:600;color:#aab6cd;letter-spacing:.2px}
+.sn{margin-left:auto;background:#1e2840;color:var(--pc,var(--accent2));border-radius:10px;padding:1px 8px;font-size:.66rem;font-weight:700}
+.schv{color:var(--muted);font-size:.6rem;transition:transform .2s}
+.sh.scol .schv{transform:rotate(-90deg)}
+.sb{display:block}.sb.col{display:none}
+.sh.empty{cursor:default;opacity:.55}
+.sh.empty:hover{background:#0f1726}
+.sn.zero{background:#2a1500;color:#fbbf24}
+
+.mc{background:var(--card);border:1px solid var(--border);border-top:none;padding:14px 18px;transition:background .12s}
+.mc:hover{background:#161e2e}
+.ps>.pb>.sb:last-child>.mc:last-child{border-radius:0 0 8px 8px}
+.mh{display:flex;align-items:center;gap:7px;margin-bottom:7px;flex-wrap:wrap}
+.mn{display:inline-block;background:#1e2840;color:var(--accent);border-radius:4px;padding:1px 7px;font-size:.69rem;font-weight:700}
+.mp{font-size:.66rem;color:var(--muted);border:1px solid var(--border);border-radius:4px;padding:1px 7px}
+.mq{font-size:.89rem;font-weight:500;color:var(--text);margin-bottom:9px;line-height:1.5}
+.mo{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:7px}
+@media(max-width:640px){.mo{grid-template-columns:1fr}.ps{margin:14px 12px 0}header,.ctrl,.chips{padding-left:14px;padding-right:14px}}
+.op{background:#141c2e;border:1px solid #1e2840;border-radius:6px;padding:5px 9px;font-size:.77rem;color:var(--muted);line-height:1.45}
+.op.c{background:#061a10;border-color:var(--correct);color:var(--correct);font-weight:600}
+body.hide .op.c{background:#141c2e;border-color:#1e2840;color:var(--muted);font-weight:400}
+body.hide .op.c .tick{display:none}
+body.hide .exp{display:none}
+.exp{background:#0e1626;border-left:2px solid var(--correct);border-radius:0 5px 5px 0;padding:6px 10px;font-size:.74rem;color:#93a3bd;line-height:1.5}
+.nores{text-align:center;padding:60px 20px;color:var(--muted);font-size:.9rem}
+.noans{background:#2a1500;border:1px solid #92400e;color:#fbbf24;border-radius:5px;padding:5px 9px;font-size:.72rem;margin-bottom:6px}
+.none{padding:9px 18px;background:#101725;border:1px solid var(--border);border-top:none;color:#6b7793;font-size:.74rem;font-style:italic}
+.cb{font-size:.63rem;font-weight:600;color:#c4b5fd;background:#1a1330;border:1px solid #6d28d9;border-radius:9px;padding:1px 7px}
+.eb{font-size:.63rem;font-weight:600;color:#6ee7b7;background:#04150f;border:1px solid #059669;border-radius:9px;padding:1px 7px}
+.xb{font-size:.63rem;font-weight:600;color:#7dd3fc;background:#04151f;border:1px solid #0284c7;border-radius:9px;padding:1px 7px}
+.ctrl2{gap:6px}
+.ctrl2 .spacer{flex:1}
+.ctrl2 .stat{padding:4px 10px}
+.editnote{font-size:.7rem;color:var(--muted);display:none}
+body.edit .editnote{display:inline}
+body.edit .op{cursor:pointer}
+body.edit .op:hover{border-color:var(--accent);color:var(--accent)}
+.del{margin-left:auto;background:#2a0e0e;border:1px solid #7f1d1d;color:#fca5a5;border-radius:6px;padding:1px 8px;font-size:.7rem;cursor:pointer;display:none;font-family:'Inter',sans-serif}
+body.edit .del{display:inline-block}
+.del:hover{background:#450a0a}
+.hint{margin:16px 22px 0;padding:10px 14px;background:#101725;border:1px dashed var(--border);border-radius:8px;color:var(--muted);font-size:.78rem}
+@media(max-width:640px){.hint{margin:14px 12px 0}}
+/* ---- access gate ---- */
+#gate{position:fixed;inset:0;z-index:500;background:radial-gradient(circle at 50% 30%,#141b2e,#080b14 70%);
+  display:flex;align-items:center;justify-content:center;padding:20px}
+#gate.hidden{display:none}
+.gatebox{width:100%;max-width:400px;background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:30px 26px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.gatelogo{font-size:2.4rem;line-height:1}
+.gatetitle{font-family:'Rajdhani',sans-serif;font-size:1.4rem;font-weight:700;color:var(--accent);margin-top:8px}
+.gatesub{font-size:.76rem;color:var(--muted);margin-top:4px;line-height:1.5}
+.gatelabel{display:block;font-size:.72rem;color:var(--muted);margin:22px 0 6px;text-align:left}
+.gateinput{width:100%;background:#0e1524;border:1px solid var(--border);border-radius:8px;
+  padding:11px 13px;color:var(--text);font-size:1rem;font-family:'Rajdhani',sans-serif;
+  font-weight:700;letter-spacing:2px;text-align:center;text-transform:uppercase;outline:none}
+.gateinput:focus{border-color:var(--accent)}
+.gatebtn{width:100%;margin-top:12px;background:var(--accent);color:#0b0f1a;border:none;border-radius:8px;
+  padding:11px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
+.gatebtn:hover{filter:brightness(1.08)}
+.gatebtn:disabled{opacity:.55;cursor:default}
+.gatemsg{margin-top:12px;font-size:.78rem;min-height:1.2em;line-height:1.5}
+.gatemsg.err{color:#fca5a5}
+.gatemsg.ok{color:#6ee7b7}
+.gatefoot{margin-top:18px;font-size:.68rem;color:#4d5873;line-height:1.6}
+/* holder name printed faintly across the page */
+.wm{position:fixed;inset:0;z-index:400;pointer-events:none;display:none;
+  align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;
+  font-size:2.4rem;font-weight:700;color:rgba(255,255,255,.035);
+  transform:rotate(-24deg);letter-spacing:6px;text-align:center;white-space:pre-line}
+.wm.on{display:flex}
+.whoami{font-size:.66rem;color:var(--muted);margin-left:auto;white-space:nowrap}
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div id="gate">
+  <div class="gatebox">
+    <div class="gatelogo">📚</div>
+    <div class="gatetitle">AME / AWM LDCE Question Bank</div>
+    <div class="gatesub">3,823 MCQs from 38 papers, sorted by syllabus topic</div>
+    <label class="gatelabel" for="codein">Enter your access code</label>
+    <input id="codein" class="gateinput" placeholder="AME-XXXX-XXXX" autocomplete="off"
+           spellcheck="false" maxlength="20">
+    <button id="gatego" class="gatebtn">Open</button>
+    <div id="gatemsg" class="gatemsg"></div>
+    <div class="gatefoot">Your code works on up to 2 devices. It is issued to you personally —
+      if it turns up on other machines it stops working.</div>
+  </div>
+</div>
+<div id="wm" class="wm"></div>
+
+
+<header>
+  <div class="h1">📚 AME MCQs — Segregated by Syllabus Topic &amp; Sub-topic</div>
+  <div class="h2">3823 MCQs from 38 papers, sorted into the ADME/AWM LDCE syllabus and its sub-topics &mdash; AME 30% &amp; 70% LDCE 2022-2025 · ADME/AWM LDCE 2026 · NAIR 2022-2024</div>
+  <div class="stats">
+    <div class="stat">Total MCQs: <b id="tot">0</b></div>
+    <div class="stat">Papers: <b>38</b></div>
+    <div class="stat">Topics: <b>14</b></div>
+    <div class="stat">Sub-topics: <b>150</b></div>
+    <div class="stat">Showing: <b id="vis">0</b></div>
+    <div class="stat" id="uvstat" title="Answers worked out by Claude where the paper carried no key">Answered by Claude: <b>0</b></div>
+  </div>
+</header>
+
+<div class="ctrl">
+  <input class="srch" id="sb" placeholder="🔍 Search question or option…">
+  <select class="sel" id="pf" onchange="render()">
+    <option value="all">All papers</option>
+    <option value="all">All papers (38)</option>
+    <optgroup label="AME 30% LDCE">
+      <option value="AME30-22">AME 30% 2022</option>
+      <option value="AME30-23">AME 30% 2023</option>
+      <option value="AME30-24">AME 30% 2024</option>
+    </optgroup>
+    <optgroup label="AME 70% LDCE">
+      <option value="AME70-23">AME 70% 2023</option>
+      <option value="AME70-23S">AME 70% 2023 (S)</option>
+      <option value="AME70-24">AME 70% 2024</option>
+      <option value="AME70-24S">AME 70% 2024 (S)</option>
+      <option value="AME70i-25">AME 70% 2025 — I</option>
+      <option value="AME70ii-25">AME 70% 2025 — II</option>
+      <option value="AME70iii-25">AME 70% 2025 — III</option>
+    </optgroup>
+    <optgroup label="ADME/AWM 30% LDCE 2026">
+      <option value="LDCE-24.05.2026">LDCE 24.05.2026</option>
+      <option value="LDCE-31.05.2026">LDCE 31.05.2026</option>
+    </optgroup>
+    <optgroup label="NAIR 2024">
+      <option value="NAIR-AMM">NAIR AMM 2024</option>
+      <option value="NAIR-AEN">NAIR AEN 2024</option>
+      <option value="NAIR-ACM">NAIR ACM 2024</option>
+      <option value="NAIR-ASTE">NAIR ASTE 2024</option>
+      <option value="NAIR-AOM">NAIR AOM 2024</option>
+      <option value="NAIR-AEE">NAIR AEE 2024</option>
+    </optgroup>
+    <optgroup label="NAIR 2023">
+      <option value="NAIR-AMM23">NAIR AMM 2023</option>
+      <option value="NAIR-AEN23">NAIR AEN 2023</option>
+      <option value="NAIR-ACM23">NAIR ACM 2023</option>
+      <option value="NAIR-ASTE23">NAIR ASTE 2023</option>
+      <option value="NAIR-AEE23">NAIR AEE 2023</option>
+    </optgroup>
+    <optgroup label="NAIR 2022">
+      <option value="NAIR-AMM22">NAIR AMM 2022</option>
+      <option value="NAIR-AEN22">NAIR AEN 2022</option>
+      <option value="NAIR-ACM22">NAIR ACM 2022</option>
+      <option value="NAIR-ASTE22">NAIR ASTE 2022</option>
+      <option value="NAIR-AOM22">NAIR AOM 2022</option>
+      <option value="NAIR-AEE22">NAIR AEE 2022</option>
+    </optgroup>
+    <optgroup label="Other departments — 70% LDCE 2025">
+      <option value="LDCE25-ACM">ACM 70% 2025</option>
+      <option value="LDCE25-AEE">AEE 70% 2025</option>
+      <option value="LDCE25-AEN">AEN 70% 2025</option>
+      <option value="LDCE25-AMM">AMM 70% 2025</option>
+      <option value="LDCE25-AOM">AOM 70% 2025</option>
+      <option value="LDCE25-APO">APO 70% 2025</option>
+      <option value="LDCE25-APO1">APO-1 70% 2025</option>
+      <option value="LDCE25-ASTE">ASTE 70% 2025</option>
+      <option value="LDCE25-RajBhasha">Rajbhasha 70% 2025</option>
+    </optgroup>
+  </select>
+  <select class="sel" id="sf2" onchange="subPick()">
+    <option value="all">All sub-topics</option>
+  </select>
+  <button class="tgl" id="ht" onclick="toggleHide()">🙈 Hide answers</button>
+  <button class="tgl" onclick="setAll(false)">⊟ Collapse all</button>
+  <button class="tgl" onclick="setAll(true)">⊞ Expand all</button>
+</div>
+
+<div class="chips">
+  <button class="fb all on" onclick="sf(this,'all')">📋 All topics <em>3823</em></button>
+  <button class="fb" data-t="gk" style="--c:#38bdf8" onclick="sf(this,'gk')">🌏 General Knowledge <em>734</em></button>
+  <button class="fb" data-t="qa" style="--c:#a78bfa" onclick="sf(this,'qa')">🔢 Quantitative Aptitude <em>22</em></button>
+  <button class="fb" data-t="am" style="--c:#f472b6" onclick="sf(this,'am')">⚙️ Applied Mechanics <em>19</em></button>
+  <button class="fb" data-t="gs" style="--c:#34d399" onclick="sf(this,'gs')">🔬 General Science <em>139</em></button>
+  <button class="fb" data-t="it" style="--c:#60a5fa" onclick="sf(this,'it')">💻 Information Technology <em>57</em></button>
+  <button class="fb" data-t="enhm" style="--c:#4ade80" onclick="sf(this,'enhm')">🌱 EnHM / Environment <em>9</em></button>
+  <button class="fb" data-t="stores" style="--c:#fbbf24" onclick="sf(this,'stores')">📦 Stores <em>69</em></button>
+  <button class="fb" data-t="estt" style="--c:#fb923c" onclick="sf(this,'estt')">👥 Establishment Rules <em>929</em></button>
+  <button class="fb" data-t="fin" style="--c:#facc15" onclick="sf(this,'fin')">💰 Financial Rules <em>503</em></button>
+  <button class="fb" data-t="dw" style="--c:#f87171" onclick="sf(this,'dw')">🚦 Divisional Working &amp; Operations <em>120</em></button>
+  <button class="fb" data-t="dsl" style="--c:#22d3ee" onclick="sf(this,'dsl')">🚆 Diesel Locomotives <em>127</em></button>
+  <button class="fb" data-t="cw" style="--c:#c084fc" onclick="sf(this,'cw')">🚃 Carriage &amp; Wagon <em>376</em></button>
+  <button class="fb" data-t="ws" style="--c:#2dd4bf" onclick="sf(this,'ws')">🏭 Workshops &amp; Production Units <em>125</em></button>
+  <button class="fb" data-t="raj" style="--c:#fda4af" onclick="sf(this,'raj')">🇮🇳 Rajbhasha (Optional) <em>594</em></button>
+</div>
+
+<div id="root"></div>
+
+<script>
+const META = {"gk": {"l": "General Knowledge", "i": "🌏", "c": "#38bdf8", "s": "Section A — General", "sub": ["Current Affairs & General", "History", "Geography", "Polity & Constitution", "Art & Culture", "Indian Railways — Facts & Achievements", "Sports", "Economy", "National Schemes & Policies", "Railway Organisation & PSUs"], "un": []}, "qa": {"l": "Quantitative Aptitude", "i": "🔢", "c": "#a78bfa", "s": "Section A — General", "sub": ["Arithmetic & General Aptitude", "Geometry — Area & Volume", "Sampling, Averages & Statistics", "Fractions, Percentage & Ratio", "Algebra & Equations"], "un": []}, "am": {"l": "Applied Mechanics", "i": "⚙️", "c": "#f472b6", "s": "Section A — General", "sub": ["Engineering Materials & Properties", "Stress & Strain", "Hardness", "Bearings", "Fatigue", "Corrosion", "Surface Finish"], "un": []}, "gs": {"l": "General Science", "i": "🔬", "c": "#34d399", "s": "Section A — General", "sub": ["General Science — Others", "Mechanics — Motion, Work, Energy & Power", "Electricity — Ohm, Coulomb & Faraday", "Heat, Work & Expansion", "IC Engines, Gas Turbines & Supercharging", "Power Supply, AC/DC & Rectification", "Motors, Dynamos, Transformers & Protection"], "un": []}, "it": {"l": "Information Technology", "i": "💻", "c": "#60a5fa", "s": "Section A — General", "sub": ["Information Technology — General", "Networking & Internet", "Railway IT Portals & Applications", "PC Hardware & Storage", "MS Office — Word, Excel, PowerPoint", "IT Policy & Data Protection"], "un": []}, "enhm": {"l": "EnHM / Environment", "i": "🌱", "c": "#4ade80", "s": "Section A — General", "sub": ["Water Act & Air Act", "Hazardous Waste Management", "EnHM — General", "Green Initiatives & Water Policy", "Solid Waste Management Rules", "Consent to Establish / Operate"], "un": []}, "stores": {"l": "Stores", "i": "📦", "c": "#fbbf24", "s": "Section B Part-A — Rules", "sub": ["Procurement Methods", "Classification of Stores", "Inventory Control & Stock Verification", "Indenting Procedures", "Procedure of Drawal of Stores", "Schedule of Powers", "Incoming Inspection Requirements", "Scrap Disposal", "Stores — General"], "un": ["Scrap Disposal"]}, "estt": {"l": "Establishment Rules", "i": "👥", "c": "#fb923c", "s": "Section B Part-A — Rules", "sub": ["D&A Rules, 1968", "Establishment — General", "Leave Rules", "Pay, Allowances & Advances", "Retirement Benefits & Pension", "Factories Act, Labour Laws & RTI", "Conduct Rules, 1966", "Recruitment, Training & APAR", "Pass Rules", "IT in Personnel — HRMS, IPAS etc.", "Seniority, Promotion & Transfers", "Staff Welfare & Grievances", "Industrial Relations — PNM, JCM & Unions", "HOER & Hours of Work", "Organisation of Personnel Dept.", "Manpower Planning & Posts"], "un": []}, "fin": {"l": "Financial Rules", "i": "💰", "c": "#facc15", "s": "Section B Part-A — Rules", "sub": ["Tenders & Contracts for Works", "Budget & Appropriation", "Works Programme, Estimates & Plan Heads", "Rules of Allocation & Classification", "Canons of Financial Propriety", "Audit, PAC & Draft Paras", "Classification of Railway Earnings", "Financial Control over Stores Expenditure", "Taxation — GST & Income Tax", "Financial Rules — General", "Cost Control in Workshops", "Railway Funds — DRF, DF & RRSK", "Delegation of Powers & SOP", "Organisation of the Finance Department", "Financial Statements & Ratios", "Railway IT — Finance Applications"], "un": []}, "dw": {"l": "Divisional Working & Operations", "i": "🚦", "c": "#f87171", "s": "Section B Part-B — Professional", "sub": ["Accident Classification & Investigation", "140 T Crane — Construction & Safety", "G&SR, Signals & Train Working", "ART / ARME Ordering", "Working Time Table", "Disaster Management & Fire Safety", "Control Office & Rail Madad", "Divisional Working — General", "ODC & Special Movements"], "un": []}, "dsl": {"l": "Diesel Locomotives", "i": "🚆", "c": "#22d3ee", "s": "Section B Part-B — Professional", "sub": ["GM / GE Locomotives", "Electric Systems of Locomotive", "Air Brake, Compressors & VCD", "Safety Devices & Troubleshooting", "MEMU / DEMU — Types & Troubleshooting", "Cooling Water System", "Fuel Oil System", "Basic Features & Engine Systems", "Lubricating Oil Consumption", "Fuel Economy & Thermal Loading", "Preventive Maintenance Schedules", "DPRS / Distributed Power", "Under Gear, Suspension & Wheels"], "un": []}, "cw": {"l": "Carriage & Wagon", "i": "🚃", "c": "#c084fc", "s": "Section B Part-B — Professional", "sub": ["Air Brake System", "Wagon Stock & Special Wagons", "LHB Coaches", "Wheels, Axles & Bearings", "Couplers, Draw Gear & Train Parting", "ICF Coaches", "Trainset — Vande Bharat", "Maintenance Schedules — POH/IOH/ROH", "CASNUB Bogie & High Speed Mods", "Coach & Wagon Design", "Carriage & Wagon — General", "Fire Prevention on Trains", "FIBA & Air Spring Suspension", "Water, OBHS & Passenger Amenities", "Corrosion Repairs & Coach Body", "IRCA Rules & Rejectable Defects"], "un": []}, "ws": {"l": "Workshops & Production Units", "i": "🏭", "c": "#2dd4bf", "s": "Section B Part-B — Professional", "sub": ["Paints & Painting Systems", "Welding Processes & Defects", "Heat Treatment of Ferrous Items", "Machine Tools & Cutting Speeds", "Casting — Basic Concepts", "Labour Accountal & Rate Fixing", "Incentive Scheme — CLW & Group", "CNC Machines", "Wheels, Tyres & Axles — Ultrasonic Testing", "Manufacturing & Heat Treatment of Wheels", "Process Flow Chart of Production Units", "Factory Layout", "Machinery & Plant Maintenance", "Roller Bearing & Cartridge Bearings", "Injury Free Features in Coaches", "Material Handling", "Design of Coaches and Wagons", "Workshops — General"], "un": ["Roller Bearing & Cartridge Bearings", "Injury Free Features in Coaches", "Material Handling", "Design of Coaches and Wagons"]}, "raj": {"l": "Rajbhasha (Optional)", "i": "🇮🇳", "c": "#fda4af", "s": "Optional", "sub": ["Committees & Implementation", "Official Languages Act, 1963", "Official Language Rules, 1976", "Constitutional Provisions", "Awards & Incentive Schemes", "Regions — Ka / Kha / Ga", "Hindi Training Courses", "Translation & Vocabulary", "Hindi Day & Promotion", "Railways Rajbhasha", "Official Language History", "Rajbhasha — General"], "un": []}};
+const PAPER_LABELS = {"AME30-22": "AME 30% 2022", "AME30-23": "AME 30% 2023", "AME30-24": "AME 30% 2024", "AME70-23": "AME 70% 2023", "AME70-23S": "AME 70% 2023 (S)", "AME70-24": "AME 70% 2024", "AME70-24S": "AME 70% 2024 (S)", "AME70i-25": "AME 70% 2025 — I", "AME70ii-25": "AME 70% 2025 — II", "AME70iii-25": "AME 70% 2025 — III", "LDCE-24.05.2026": "LDCE 24.05.2026", "LDCE-31.05.2026": "LDCE 31.05.2026", "NAIR-AMM": "NAIR AMM 2024", "NAIR-AEN": "NAIR AEN 2024", "NAIR-ACM": "NAIR ACM 2024", "NAIR-ASTE": "NAIR ASTE 2024", "NAIR-AOM": "NAIR AOM 2024", "NAIR-AEE": "NAIR AEE 2024", "NAIR-AMM22": "NAIR AMM 2022", "NAIR-AEN22": "NAIR AEN 2022", "NAIR-ACM22": "NAIR ACM 2022", "NAIR-ASTE22": "NAIR ASTE 2022", "NAIR-AOM22": "NAIR AOM 2022", "NAIR-AEE22": "NAIR AEE 2022", "NAIR-AMM23": "NAIR AMM 2023", "NAIR-AEN23": "NAIR AEN 2023", "NAIR-ACM23": "NAIR ACM 2023", "NAIR-ASTE23": "NAIR ASTE 2023", "NAIR-AOM23": "NAIR AOM 2023", "NAIR-AEE23": "NAIR AEE 2023", "LDCE25-ACM": "ACM 70% 2025", "LDCE25-AEE": "AEE 70% 2025", "LDCE25-AEN": "AEN 70% 2025", "LDCE25-AMM": "AMM 70% 2025", "LDCE25-AOM": "AOM 70% 2025", "LDCE25-APO": "APO 70% 2025", "LDCE25-APO1": "APO-1 70% 2025", "LDCE25-ASTE": "ASTE 70% 2025", "LDCE25-RajBhasha": "Rajbhasha 70% 2025"};
+const ORDER = ["gk", "qa", "am", "gs", "it", "enhm", "stores", "estt", "fin", "dw", "dsl", "cw", "ws", "raj"];
+let D = [];
+
+let filt='all', srch='', hide=false, subFilt='all';
+
+/* the student build has no editing: these keep render() unchanged */
+function ansOf(it){ return it.a; }
+function isDeleted(){ return false; }
+function isUnverified(){ return false; }
+const edits = {};
+let editMode = false, showUnverified = false;
+function saveEdits(){}
+
+const collapsed={}, scollapsed={};
+
+
+document.getElementById('sb').addEventListener('input',function(){srch=this.value.toLowerCase();render();});
+
+function fillSubs(){
+  const sel=document.getElementById('sf2');
+  sel.innerHTML='<option value="all">All sub-topics</option>';
+  if(filt==='all'){sel.disabled=true;subFilt='all';return;}
+  sel.disabled=false;
+  META[filt].sub.forEach(s=>{
+    const o=document.createElement('option');
+    o.value=s;o.textContent=s;sel.appendChild(o);
+  });
+  sel.value='all';subFilt='all';
+}
+function subPick(){subFilt=document.getElementById('sf2').value;render();}
+
+function sf(btn,t){
+  filt=t;
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  fillSubs();
+  render();
+}
+function toggleHide(){
+  hide=!hide;
+  document.body.classList.toggle('hide',hide);
+  const b=document.getElementById('ht');
+  b.classList.toggle('on',hide);
+  b.textContent=hide?'👁 Show answers':'🙈 Hide answers';
+}
+function setAll(open){
+  ORDER.forEach(k=>{collapsed[k]=!open;META[k].sub.forEach(s=>scollapsed[k+'|'+s]=false);});
+  render();
+}
+function tog(k){collapsed[k]=!collapsed[k];render();}
+function stog(ev,k,s){ev.stopPropagation();scollapsed[k+'|'+s]=!scollapsed[k+'|'+s];render();}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+function match(it){
+  if(isDeleted(it)) return false;
+  if(isUnverified(it) && !showUnverified) return false;
+  if(filt!=='all' && it.t!==filt) return false;
+  if(filt!=='all' && subFilt!=='all' && it.s!==subFilt) return false;
+  const p=document.getElementById('pf').value;
+  if(p!=='all' && it.p!==p) return false;
+  if(!srch) return true;
+  return it.q.toLowerCase().includes(srch)||it.o.some(o=>o.toLowerCase().includes(srch));
+}
+
+function card(it,i){
+  const a=ansOf(it);
+  const edited=!!(edits[it.i]&&edits[it.i].a!==undefined);
+  const opts=it.o.map((o,j)=>{
+    const ok=(a===j);
+    const click=editMode?(' onclick="setAns('+it.i+','+j+')"'):'';
+    return '<div class="'+(ok?'op c':'op')+'"'+click+'>'+'ABCD'[j]+') '+esc(o)+(ok?' <span class="tick">✓</span>':'')+'</div>';
+  }).join('');
+  const expl=it.e?'<div class="exp">💡 '+esc(it.e)+'</div>':'';
+  let warn='';
+  if(it.f==='broken') warn='<div class="noans">⚠️ This question is garbled in the source document — options incomplete</div>';
+  else if(it.f==='deleted') warn='<div class="noans">⚠️ Answer deleted in the original paper</div>';
+  else if(a<0) warn='<div class="noans">⚠️ No answer key in the source paper — pick the right option in edit mode</div>';
+  let badge='';
+  if(edited) badge='<span class="eb" title="You set this answer">✓ Your answer</span>';
+  else if(it.c===2) badge='<span class="xb" title="No key in the paper. This answer was reached twice over, independently, by two separate question banks — but it is still not an official key.">🤖 Claude · cross-checked</span>';
+  else if(it.c) badge='<span class="cb" title="The paper carried no key here; this answer was worked out by Claude. Confirm it in edit mode to keep the question.">🤖 Answer by Claude</span>';
+  const del=editMode?'<button class="del" onclick="delQ('+it.i+')" title="Remove this question">✕ remove</button>':'';
+  return '<div class="mc">'
+   + '<div class="mh"><span class="mn">'+i+'</span>'
+   + '<span class="mp">'+esc(PAPER_LABELS[it.p]||it.p)+' · Q'+esc(it.n)+'</span>'+badge+del+'</div>'
+   + '<div class="mq">'+esc(it.q)+'</div>'
+   + '<div class="mo">'+opts+'</div>'
+   + warn + expl + '</div>';
+}
+
+function render(){
+  const root=document.getElementById('root');
+  const filtered=D.filter(match);
+  const live=D.filter(it=>!isDeleted(it)&&!isUnverified(it)).length;
+  const unver=D.filter(it=>isUnverified(it)&&!isDeleted(it)).length;
+  document.getElementById('tot').textContent=live;
+  document.getElementById('vis').textContent=filtered.length;
+  const uvn=document.getElementById('uvn');      // absent in the student build
+  if(uvn) uvn.textContent=unver;
+  if(!filtered.length){root.innerHTML='<div class="nores">No questions match the current filter.</div>';return;}
+
+  const grp={};
+  filtered.forEach(it=>{(grp[it.t]=grp[it.t]||[]).push(it);});
+
+  let html='';
+  const anyOpen=ORDER.some(k=>grp[k]&&!collapsed[k]);
+  if(!anyOpen) html+='<div class="hint">Click a topic below to open it, or use ⊞ Expand all. '
+    +'Pick a topic first and the sub-topic list becomes available.</div>';
+  ORDER.forEach(k=>{
+    const items=grp[k];
+    if(!items) return;
+    const m=META[k];
+    html+='<div class="ps" style="--pc:'+m.c+'">'
+       + '<div class="ph'+(collapsed[k]?' chcol':'')+'" onclick="tog(\''+k+'\')">'
+       + '<span class="chv">▼</span>'
+       + '<span class="pt">'+m.i+' '+esc(m.l)+'</span>'
+       + '<span class="psec">'+esc(m.s)+'</span>'
+       + '<span class="pc">'+items.length+' Q</span>'
+       + '</div><div class="pb'+(collapsed[k]?' col':'')+'">';
+
+    // group by sub-topic, in syllabus order
+    const sg={};
+    items.forEach(it=>{(sg[it.s]=sg[it.s]||[]).push(it);});
+    let n=0;
+    const showUntested=(srch==='' && document.getElementById('pf').value==='all' && subFilt==='all');
+    m.sub.forEach(s=>{
+      const list=sg[s];
+      if(!list){
+        if(showUntested && m.un.indexOf(s)>=0){
+          html+='<div class="sh empty"><span class="schv">▸</span><span class="st">'+esc(s)
+             +'</span><span class="sn zero">0 Q</span></div>'
+             +'<div class="none">No question asked from this syllabus sub-topic in these 5 papers.</div>';
+        }
+        return;
+      }
+      const key=k+'|'+s, sc=scollapsed[key];
+      html+='<div class="sh'+(sc?' scol':'')+'" onclick="stog(event,\''+k+'\',\''+s.replace(/'/g,"\\'")+'\')">'
+         + '<span class="schv">▼</span><span class="st">'+esc(s)+'</span>'
+         + '<span class="sn">'+list.length+' Q</span></div>'
+         + '<div class="sb'+(sc?' col':'')+'">';
+      list.forEach(it=>{n++;html+=card(it,n);});
+      html+='</div>';
+    });
+    html+='</div></div>';
+  });
+  root.innerHTML=html;
+}
+
+// with a few thousand cards, opening everything at once makes the first paint
+// slow, so topics start closed and open on click
+ORDER.forEach(k=>collapsed[k]=true);
+// Every answer now comes from a printed key, so the "unverified" controls have
+// nothing to act on; hide them rather than show a permanent zero.
+if(!D.some(x=>x.c)){
+  const b=document.getElementById('uv'); if(b) b.style.display='none';
+  const s=document.getElementById('uvstat'); if(s) s.style.display='none';
+}
+/* ================= access gate ================= */
+/* Fill these two in from Supabase → Project Settings → API.
+   The anon key is meant to be public: on its own it reads nothing, because the
+   questions table has row level security with no select policy. */
+const SUPABASE_URL = 'https://udcplxwchwdttnesmqxb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkY3BseHdjaHdkdHRuZXNtcXhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MzQ1MTYsImV4cCI6MjEwNTUxMDUxNn0.JGlH_kBLpoMSUWTRJucvotupVCZObJ6RgBJhpCJMNlU';
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* A per-browser id, so one code can be tied to a couple of machines. */
+function deviceId(){
+  let d = null;
+  try { d = localStorage.getItem('ame_device'); } catch(e){}
+  if(!d){
+    d = 'd-' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+    try { localStorage.setItem('ame_device', d); } catch(e){}
+  }
+  return d;
+}
+
+const REASONS = {
+  unknown_code : 'That code was not recognised. Check for typing mistakes.',
+  revoked      : 'This code has been switched off. Contact the person who gave it to you.',
+  expired      : 'This code has expired.',
+  device_limit : 'This code is already in use on the maximum number of devices.'
+};
+
+function gateMsg(text, cls){
+  const el = document.getElementById('gatemsg');
+  el.textContent = text || '';
+  el.className = 'gatemsg' + (cls ? ' ' + cls : '');
+}
+
+async function openBank(code){
+  const btn = document.getElementById('gatego');
+  btn.disabled = true;
+  gateMsg('Checking…');
+  const dev = deviceId();
+  try{
+    const { data, error } = await sb.rpc('redeem_code',
+      { p_code: code, p_device: dev, p_ua: navigator.userAgent });
+    if(error) throw error;
+    if(!data || !data.ok){
+      gateMsg(REASONS[data && data.reason] || 'Could not open the bank.', 'err');
+      btn.disabled = false;
+      return;
+    }
+    gateMsg('Loading questions…', 'ok');
+    const { data: rows, error: e2 } = await sb.rpc('fetch_questions',
+      { p_code: code, p_device: dev });
+    if(e2) throw e2;
+    if(!rows || !rows.length){
+      gateMsg('No questions came back. Tell the administrator.', 'err');
+      btn.disabled = false;
+      return;
+    }
+    D = rows.map(r => ({
+      i: r.id, t: r.topic_key, s: r.sub_topic, p: r.paper_code,
+      n: String(r.qno == null ? '' : r.qno),
+      q: r.question,
+      o: (typeof r.options === 'string') ? JSON.parse(r.options) : r.options,
+      a: (r.answer_index == null ? -1 : r.answer_index),
+      e: r.note || ''
+    }));
+    try { sessionStorage.setItem('ame_code', code); } catch(e){}
+
+    const who = (data.holder || '').trim();
+    if(who){
+      const wm = document.getElementById('wm');
+      wm.textContent = (who + '\n' + code).toUpperCase();
+      wm.classList.add('on');
+      const tag = document.createElement('div');
+      tag.className = 'whoami';
+      tag.textContent = who + ' · ' + code;
+      const stats = document.querySelector('.stats');
+      if(stats) stats.appendChild(tag);
+    }
+    document.getElementById('gate').classList.add('hidden');
+    ORDER.forEach(k => collapsed[k] = true);
+    fillSubs();
+    render();
+  }catch(err){
+    gateMsg('Could not reach the server. Check your internet and try again.', 'err');
+    btn.disabled = false;
+  }
+}
+
+(function initGate(){
+  const input = document.getElementById('codein');
+  const btn = document.getElementById('gatego');
+  btn.addEventListener('click', () => {
+    const c = input.value.trim().toUpperCase();
+    if(c.length < 4){ gateMsg('Enter the code you were given.', 'err'); return; }
+    openBank(c);
+  });
+  input.addEventListener('keydown', e => { if(e.key === 'Enter') btn.click(); });
+  let saved = null;
+  try { saved = sessionStorage.getItem('ame_code'); } catch(e){}
+  if(saved){ input.value = saved; openBank(saved); }
+  else { input.focus(); }
+})();
+
+</script>
+</body>
+</html>
