@@ -177,62 +177,6 @@ body.edit .del{display:inline-block}
 
 <div class="ctrl">
   <input class="srch" id="sb" placeholder="🔍 Search question or option…">
-  <select class="sel" id="pf" onchange="render()">
-    <option value="all">All papers</option>
-    <option value="all">All papers (38)</option>
-    <optgroup label="AME 30% LDCE">
-      <option value="AME30-22">AME 30% 2022</option>
-      <option value="AME30-23">AME 30% 2023</option>
-      <option value="AME30-24">AME 30% 2024</option>
-    </optgroup>
-    <optgroup label="AME 70% LDCE">
-      <option value="AME70-23">AME 70% 2023</option>
-      <option value="AME70-23S">AME 70% 2023 (S)</option>
-      <option value="AME70-24">AME 70% 2024</option>
-      <option value="AME70-24S">AME 70% 2024 (S)</option>
-      <option value="AME70i-25">AME 70% 2025 — I</option>
-      <option value="AME70ii-25">AME 70% 2025 — II</option>
-      <option value="AME70iii-25">AME 70% 2025 — III</option>
-    </optgroup>
-    <optgroup label="ADME/AWM 30% LDCE 2026">
-      <option value="LDCE-24.05.2026">LDCE 24.05.2026</option>
-      <option value="LDCE-31.05.2026">LDCE 31.05.2026</option>
-    </optgroup>
-    <optgroup label="NAIR 2024">
-      <option value="NAIR-AMM">NAIR AMM 2024</option>
-      <option value="NAIR-AEN">NAIR AEN 2024</option>
-      <option value="NAIR-ACM">NAIR ACM 2024</option>
-      <option value="NAIR-ASTE">NAIR ASTE 2024</option>
-      <option value="NAIR-AOM">NAIR AOM 2024</option>
-      <option value="NAIR-AEE">NAIR AEE 2024</option>
-    </optgroup>
-    <optgroup label="NAIR 2023">
-      <option value="NAIR-AMM23">NAIR AMM 2023</option>
-      <option value="NAIR-AEN23">NAIR AEN 2023</option>
-      <option value="NAIR-ACM23">NAIR ACM 2023</option>
-      <option value="NAIR-ASTE23">NAIR ASTE 2023</option>
-      <option value="NAIR-AEE23">NAIR AEE 2023</option>
-    </optgroup>
-    <optgroup label="NAIR 2022">
-      <option value="NAIR-AMM22">NAIR AMM 2022</option>
-      <option value="NAIR-AEN22">NAIR AEN 2022</option>
-      <option value="NAIR-ACM22">NAIR ACM 2022</option>
-      <option value="NAIR-ASTE22">NAIR ASTE 2022</option>
-      <option value="NAIR-AOM22">NAIR AOM 2022</option>
-      <option value="NAIR-AEE22">NAIR AEE 2022</option>
-    </optgroup>
-    <optgroup label="Other departments — 70% LDCE 2025">
-      <option value="LDCE25-ACM">ACM 70% 2025</option>
-      <option value="LDCE25-AEE">AEE 70% 2025</option>
-      <option value="LDCE25-AEN">AEN 70% 2025</option>
-      <option value="LDCE25-AMM">AMM 70% 2025</option>
-      <option value="LDCE25-AOM">AOM 70% 2025</option>
-      <option value="LDCE25-APO">APO 70% 2025</option>
-      <option value="LDCE25-APO1">APO-1 70% 2025</option>
-      <option value="LDCE25-ASTE">ASTE 70% 2025</option>
-      <option value="LDCE25-RajBhasha">Rajbhasha 70% 2025</option>
-    </optgroup>
-  </select>
   <select class="sel" id="sf2" onchange="subPick()">
     <option value="all">All sub-topics</option>
   </select>
@@ -676,7 +620,7 @@ function banner(msg){
    counts, cards only from what has actually been fetched */
 render = function(){
   const root = document.getElementById('root');
-  const paper = document.getElementById('pf').value;
+  const paper = paperNow();
   const loadedShown = D.filter(it =>
       (filt === 'all' || it.t === filt) &&
       (filt === 'all' || subFilt === 'all' || it.s === subFilt) &&
@@ -705,10 +649,9 @@ render = function(){
       root.innerHTML = h;
       return;
     }
-    const paperNow = document.getElementById('pf').value;
     const list = D.filter(it => SEARCH.ids.indexOf(it.i) >= 0 &&
         (filt === 'all' || it.t === filt) &&
-        (paperNow === 'all' || it.p === paperNow));
+        (paperNow() === 'all' || it.p === paperNow()));
     h += '<span class="pc">' + list.length + ' Q</span></div><div class="pb">';
     if(!list.length){
       h += '<div class="none">Nothing found for “' + esc(SEARCH.term) + '”.</div>';
