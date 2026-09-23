@@ -729,7 +729,12 @@ async function openBank(code){
       { p_code: code, p_device: dev, p_ua: navigator.userAgent });
     if(error) throw error;
     if(!data || !data.ok){
-      gateMsg(REASONS[data && data.reason] || 'Could not open the bank.', 'err');
+      const why = data && data.reason;
+      /* a code that will never work again should not be retried on every visit */
+      if(why === 'unknown_code' || why === 'revoked' || why === 'expired'){
+        try { localStorage.removeItem('ame_code'); } catch(e){}
+      }
+      gateMsg(REASONS[why] || 'Could not open the bank.', 'err');
       btn.disabled = false;
       return;
     }
@@ -740,7 +745,9 @@ async function openBank(code){
     QUOTA = { served: data.served_today || 0, limit: data.daily_limit || 0 };
     quotaBar();
     wireSearch();
-    try { sessionStorage.setItem('ame_code', code); } catch(e){}
+    /* remembered on this device, not just this browser session, so the code is
+       asked for once and not on every visit */
+    try { localStorage.setItem('ame_code', code); } catch(e){}
 
     /* The holder's name is what identifies a leaked screenshot. The code itself
        is never shown - anyone pausing a video or seeing a screenshot would
@@ -775,7 +782,7 @@ async function openBank(code){
   });
   input.addEventListener('keydown', e => { if(e.key === 'Enter') btn.click(); });
   let saved = null;
-  try { saved = sessionStorage.getItem('ame_code'); } catch(e){}
+  try { saved = localStorage.getItem('ame_code'); } catch(e){}
   if(saved){ input.value = saved; openBank(saved); }
   else { input.focus(); }
 })();
