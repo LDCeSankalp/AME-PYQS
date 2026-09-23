@@ -145,8 +145,8 @@ body.edit .del{display:inline-block}
            spellcheck="false" maxlength="20">
     <button id="gatego" class="gatebtn">Open</button>
     <div id="gatemsg" class="gatemsg"></div>
-    <div class="gatefoot">Your code works on up to 2 devices. It is issued to you personally —
-      if it turns up on other machines it stops working.</div>
+    <div class="gatefoot">Your code is issued to you personally and works on one device.
+      Changing phone? Message us and we will re-pair it.</div>
   </div>
 </div>
 <div id="wm" class="wm"></div>
@@ -677,8 +677,9 @@ render = function(){
   });
 
   if(!anyOpen){
-    html = '<div class="hint">Open a topic, then tap a sub-topic to load its questions. '
-         + 'Only what you open counts against your daily allowance.</div>' + html;
+    html = '<div class="hint">Open a topic, then tap a sub-topic to see its questions — '
+         + 'or type any word in the search box to look through all ' + TOTAL
+         + ' at once.</div>' + html;
   }
   root.innerHTML = html;
 };
