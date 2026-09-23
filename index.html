@@ -742,17 +742,19 @@ async function openBank(code){
     wireSearch();
     try { sessionStorage.setItem('ame_code', code); } catch(e){}
 
-    const who = (data.holder || '').trim();
-    if(who){
-      const wm = document.getElementById('wm');
-      wm.textContent = (who + '\n' + code).toUpperCase();
-      wm.classList.add('on');
-      const tag = document.createElement('div');
-      tag.className = 'whoami';
-      tag.textContent = who + ' · ' + code;
-      const stats = document.querySelector('.stats');
-      if(stats) stats.appendChild(tag);
-    }
+    /* The holder's name is what identifies a leaked screenshot. The code itself
+       is never shown - anyone pausing a video or seeing a screenshot would
+       otherwise have a working code. Unnamed codes fall back to their last four
+       characters, which is enough to trace without giving access. */
+    const who = (data.holder || '').trim() || ('code ' + code.slice(-4));
+    const wm = document.getElementById('wm');
+    wm.textContent = who.toUpperCase();
+    wm.classList.add('on');
+    const tag = document.createElement('div');
+    tag.className = 'whoami';
+    tag.textContent = who;
+    const stats = document.querySelector('.stats');
+    if(stats) stats.appendChild(tag);
     document.getElementById('gate').classList.add('hidden');
     ORDER.forEach(k => collapsed[k] = true);
     fillSubs();
