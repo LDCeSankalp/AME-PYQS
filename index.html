@@ -164,12 +164,12 @@ body.edit .del{display:inline-block}
 
 <header>
   <div class="h1">📚 AME MCQs — Segregated by Syllabus Topic &amp; Sub-topic</div>
-  <div class="h2">3823 MCQs from 38 papers, sorted into the ADME/AWM LDCE syllabus and its sub-topics &mdash; AME 30% &amp; 70% LDCE 2022-2025 · ADME/AWM LDCE 2026 · NAIR 2022-2024</div>
+  <div class="h2">3823 MCQs from 38 papers, sorted into the ADME/AWM LDCE syllabus and its sub-topics &mdash; AME 30% &amp; 70% LDCE 2022-2025 · ADME/AWM LDCE 2026 · NAIR 2022-2024 · Other departments 70% LDCE 2025</div>
   <div class="stats">
     <div class="stat">Total MCQs: <b id="tot">0</b></div>
     <div class="stat">Papers: <b>38</b></div>
     <div class="stat">Topics: <b>14</b></div>
-    <div class="stat">Sub-topics: <b>150</b></div>
+    <div class="stat">Sub-topics: <b>146</b></div>
     <div class="stat">Showing: <b id="vis">0</b></div>
     <div class="stat qstat" id="qstat"></div>
   </div>
@@ -438,7 +438,64 @@ let QUOTA = { served: 0, limit: 0 };
 
 /* the offline page searches the questions it holds; here the box has to ask
    the server, so its listener is replaced */
+/* total for the current paper choice, for the "All topics" chip */
+function paperTotal(){
+  return ORDER.reduce((n, k) => n + topicCount(k), 0);
+}
+
+/* the topic chips show the counts for the chosen paper, and hide topics that
+   paper has nothing in */
+function paintChips(){
+  document.querySelectorAll('.fb').forEach(b => {
+    const em = b.querySelector('em');
+    if(!em) return;
+    const t = b.dataset.t;
+    const n = t ? topicCount(t) : paperTotal();
+    em.textContent = n;
+    if(t) b.style.display = n ? '' : 'none';
+  });
+}
+
+/* the sub-topic dropdown lists only sub-topics that have questions for the
+   chosen paper; the offline page's version listed every syllabus sub-topic */
+fillSubs = function(){
+  const sel = document.getElementById('sf2');
+  const keep = subFilt;
+  sel.innerHTML = '<option value="all">All sub-topics</option>';
+  if(filt === 'all'){ sel.disabled = true; subFilt = 'all'; return; }
+  sel.disabled = false;
+  META[filt].sub.forEach(s => {
+    const n = subCount(filt, s);
+    if(!n) return;
+    const o = document.createElement('option');
+    o.value = s; o.textContent = s + ' (' + n + ')';
+    sel.appendChild(o);
+  });
+  const still = [...sel.options].some(x => x.value === keep);
+  sel.value = still ? keep : 'all';
+  subFilt = sel.value;
+};
+
+function onPaperChange(){
+  /* a topic chip for a topic this paper lacks falls back to all topics */
+  if(filt !== 'all' && !topicCount(filt)){
+    const all = document.querySelector('.fb.all');
+    if(all) sf(all, 'all');
+  }
+  paintChips();
+  fillSubs();
+  if(SEARCH && SEARCH.term) doSearch(SEARCH.term);
+  else render();
+}
+
 function wireSearch(){
+  const pfEl = document.getElementById('pf');
+  if(pfEl && !pfEl.dataset.wired){
+    pfEl.removeAttribute('onchange');
+    pfEl.addEventListener('change', onPaperChange);
+    pfEl.dataset.wired = '1';
+  }
+  paintChips();
   const old = document.getElementById('sb');
   const box = old.cloneNode(true);
   box.placeholder = '🔍 Search all 3,823 questions…';
@@ -566,8 +623,10 @@ async function doSearch(term){
   SEARCH = { term: term, loading: true, ids: [] };
   render();
   try{
-    const { data, error } = await sb.rpc('search_questions',
-      { p_code: CODE, p_device: DEVICE, p_term: term });
+    const args = { p_code: CODE, p_device: DEVICE, p_term: term };
+    const p = paperNow();
+    if(p !== 'all') args.p_paper = p;
+    const { data, error } = await sb.rpc('search_questions', args);
     if(error) throw error;
     if(!data || !data.ok){
       SEARCH = { term: term, error:
@@ -592,7 +651,7 @@ async function doSearch(term){
       }
     });
     SEARCH = { term: term, hits: data.hits, shown: data.shown, trial: !!data.trial,
-               ids: (data.rows || []).map(r => r.id) };
+               paper: paperNow(), ids: (data.rows || []).map(r => r.id) };
     if(data.served_today != null) QUOTA.served = data.served_today;
     quotaBar();
   }catch(err){
