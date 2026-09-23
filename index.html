@@ -424,9 +424,34 @@ const TOTAL = 3823;
 const LOADED = {};          // "topic|sub" -> true once its questions are here
 let QUOTA = { served: 0, limit: 0 };
 
+/* the offline page searches the questions it holds; here the box has to ask
+   the server, so its listener is replaced */
+function wireSearch(){
+  const old = document.getElementById('sb');
+  const box = old.cloneNode(true);
+  box.placeholder = '🔍 Search all 3,823 questions…';
+  old.replaceWith(box);
+  box.addEventListener('input', function(){
+    const v = this.value;
+    srch = v.toLowerCase();
+    clearTimeout(searchTimer);
+    if(v.trim().length < 3){
+      if(SEARCH){ SEARCH = null; render(); }
+      return;
+    }
+    searchTimer = setTimeout(() => doSearch(v), 450);
+  });
+  box.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ clearTimeout(searchTimer); doSearch(this.value); }
+  });
+}
+
 function quotaBar(){
   const el = document.getElementById('qstat');
   if(!el) return;
+  /* the allowance is only worth showing when it is a real constraint */
+  if(!QUOTA.limit || QUOTA.limit >= 100000){ el.style.display = 'none'; return; }
+  el.style.display = '';
   const left = Math.max(0, QUOTA.limit - QUOTA.served);
   el.innerHTML = 'Today: <b>' + QUOTA.served + '</b> / ' + QUOTA.limit +
                  ' &nbsp;·&nbsp; ' + left + ' left';
@@ -478,6 +503,57 @@ async function loadSub(k, s){
   render();
 }
 
+/* ---- search across the whole bank ----
+   The page only holds what has been opened, so searching has to happen on the
+   server. Results are shown in their own panel; clearing the box goes back to
+   the topic list. */
+let SEARCH = null;          // {term, hits, shown, ids:[]} while a search is on
+let searchTimer = null;
+
+async function doSearch(term){
+  term = (term || '').trim();
+  if(term.length < 3){
+    SEARCH = null;
+    srch = '';
+    render();
+    return;
+  }
+  SEARCH = { term: term, loading: true, ids: [] };
+  render();
+  try{
+    const { data, error } = await sb.rpc('search_questions',
+      { p_code: CODE, p_device: DEVICE, p_term: term });
+    if(error) throw error;
+    if(!data || !data.ok){
+      SEARCH = { term: term, error:
+        (data && data.reason === 'too_short') ? 'Type at least three letters.'
+                                              : 'Search is not available right now.',
+        ids: [] };
+      render();
+      return;
+    }
+    (data.rows || []).forEach(r => {
+      if(!D.some(x => x.i === r.id)){
+        D.push({
+          i: r.id, t: r.topic_key, s: r.sub_topic, p: r.paper_code,
+          n: String(r.qno == null ? '' : r.qno),
+          q: r.question,
+          o: (typeof r.options === 'string') ? JSON.parse(r.options) : r.options,
+          a: (r.answer_index == null ? -1 : r.answer_index),
+          e: r.note || ''
+        });
+      }
+    });
+    SEARCH = { term: term, hits: data.hits, shown: data.shown,
+               ids: (data.rows || []).map(r => r.id) };
+    if(data.served_today != null) QUOTA.served = data.served_today;
+    quotaBar();
+  }catch(err){
+    SEARCH = { term: term, error: 'Could not reach the server.', ids: [] };
+  }
+  render();
+}
+
 function banner(msg){
   const el = document.getElementById('bnr');
   if(!el) return;
@@ -499,6 +575,46 @@ render = function(){
                 it.o.some(o => o.toLowerCase().includes(srch))));
 
   document.getElementById('tot').textContent = TOTAL;
+
+  /* a search takes over the page while it is on */
+  if(SEARCH){
+    let h = '<div class="ps" style="--pc:#f59e0b">'
+          + '<div class="ph"><span class="pt">🔍 Search results</span>'
+          + '<span class="psec">' + esc(SEARCH.term) + '</span>';
+    if(SEARCH.loading){
+      h += '<span class="pc">…</span></div><div class="pb">'
+         + '<div class="none">Searching the whole bank…</div></div></div>';
+      document.getElementById('vis').textContent = '…';
+      root.innerHTML = h;
+      return;
+    }
+    if(SEARCH.error){
+      h += '<span class="pc">!</span></div><div class="pb">'
+         + '<div class="none">' + esc(SEARCH.error) + '</div></div></div>';
+      document.getElementById('vis').textContent = '0';
+      root.innerHTML = h;
+      return;
+    }
+    const paperNow = document.getElementById('pf').value;
+    const list = D.filter(it => SEARCH.ids.indexOf(it.i) >= 0 &&
+        (filt === 'all' || it.t === filt) &&
+        (paperNow === 'all' || it.p === paperNow));
+    h += '<span class="pc">' + list.length + ' Q</span></div><div class="pb">';
+    if(!list.length){
+      h += '<div class="none">Nothing found for “' + esc(SEARCH.term) + '”.</div>';
+    }else{
+      if(SEARCH.hits > SEARCH.shown){
+        h += '<div class="none">Showing the first ' + SEARCH.shown + ' of ' +
+             SEARCH.hits + ' matches — narrow the words to see fewer.</div>';
+      }
+      list.forEach((it, i) => { h += card(it, i + 1); });
+    }
+    h += '</div></div>';
+    document.getElementById('vis').textContent = list.length;
+    root.innerHTML = h;
+    return;
+  }
+
   document.getElementById('vis').textContent = loadedShown.length;
 
   let html = '';
@@ -622,6 +738,7 @@ async function openBank(code){
     D = [];
     QUOTA = { served: data.served_today || 0, limit: data.daily_limit || 0 };
     quotaBar();
+    wireSearch();
     try { sessionStorage.setItem('ame_code', code); } catch(e){}
 
     const who = (data.holder || '').trim();
