@@ -511,7 +511,13 @@ async function loadSub(k, s){
     scollapsed[key] = false;
   }catch(err){
     LOADED[key] = false;
-    banner('Could not reach the server. Check your internet and try again.');
+    /* only a genuine network failure is an internet problem; anything the
+       server actually answered with should say so, not blame the connection */
+    const offline = (typeof navigator !== 'undefined' && navigator.onLine === false);
+    console.error('fetch_subtopic failed', err);
+    banner(offline
+      ? 'You appear to be offline. Check your connection and try again.'
+      : 'Something went wrong opening that section. Please try again, and message us if it keeps happening.');
   }
   quotaBar();
   render();
@@ -565,7 +571,11 @@ async function doSearch(term){
     if(data.served_today != null) QUOTA.served = data.served_today;
     quotaBar();
   }catch(err){
-    SEARCH = { term: term, error: 'Could not reach the server.', ids: [] };
+    console.error('search_questions failed', err);
+    SEARCH = { term: term, ids: [], error:
+      (typeof navigator !== 'undefined' && navigator.onLine === false)
+        ? 'You appear to be offline.'
+        : 'Search could not be completed. Please try again.' };
   }
   render();
 }
@@ -812,7 +822,10 @@ async function openBank(code){
     fillSubs();
     render();
   }catch(err){
-    gateMsg('Could not reach the server. Check your internet and try again.', 'err');
+    console.error('redeem_code failed', err);
+    gateMsg((typeof navigator !== 'undefined' && navigator.onLine === false)
+      ? 'You appear to be offline. Check your connection and try again.'
+      : 'Could not sign in just now. Please try again in a moment.', 'err');
     btn.disabled = false;
   }
 }
