@@ -131,6 +131,16 @@ body.edit .del{display:inline-block}
   border:1px solid #92400e;border-radius:8px;color:#fbbf24;font-size:.8rem;line-height:1.55}
 @media(max-width:640px){.bnr{margin:12px 12px 0}}
 
+/* trial countdown */
+.stat.trial{border-color:#0369a1;background:#04151f}
+.stat.trial b{color:#7dd3fc}
+.stat.trial.low{border-color:#92400e;background:#2a1500}
+.stat.trial.low b{color:#fbbf24}
+
+/* trial sample notice */
+.trialnote{padding:9px 18px;background:#04151f;border:1px solid #0369a1;border-top:none;
+  color:#7dd3fc;font-size:.75rem;line-height:1.55}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -422,6 +432,7 @@ const TOTAL = 3823;
    daily allowance, which the database enforces. */
 
 const LOADED = {};          // "topic|sub" -> true once its questions are here
+const TRIAL_CAP = {};       // "topic|sub" -> {shown,total} when a trial saw only a sample
 let QUOTA = { served: 0, limit: 0 };
 
 /* the offline page searches the questions it holds; here the box has to ask
@@ -474,6 +485,8 @@ async function loadSub(k, s){
         banner('You have opened ' + data.served_today + ' questions today, which is the ' +
                'daily limit of ' + data.daily_limit +
                '. It resets at midnight — the topics you have already opened stay available.');
+      }else if(data && data.reason === 'not_authorised'){
+        banner('Your access has ended. Message us on WhatsApp to continue.');
       }else{
         banner('Could not open that section. Try signing in again.');
       }
@@ -493,6 +506,7 @@ async function loadSub(k, s){
         e: r.note || ''
       });
     });
+    if(data.trial && data.total > data.shown) TRIAL_CAP[key] = { shown: data.shown, total: data.total };
     LOADED[key] = true;
     scollapsed[key] = false;
   }catch(err){
@@ -527,7 +541,9 @@ async function doSearch(term){
     if(!data || !data.ok){
       SEARCH = { term: term, error:
         (data && data.reason === 'too_short') ? 'Type at least three letters.'
-                                              : 'Search is not available right now.',
+        : (data && data.reason === 'not_authorised')
+            ? 'Your access has ended. Message us on WhatsApp to continue.'
+            : 'Search is not available right now.',
         ids: [] };
       render();
       return;
@@ -544,7 +560,7 @@ async function doSearch(term){
         });
       }
     });
-    SEARCH = { term: term, hits: data.hits, shown: data.shown,
+    SEARCH = { term: term, hits: data.hits, shown: data.shown, trial: !!data.trial,
                ids: (data.rows || []).map(r => r.id) };
     if(data.served_today != null) QUOTA.served = data.served_today;
     quotaBar();
@@ -603,7 +619,10 @@ render = function(){
     if(!list.length){
       h += '<div class="none">Nothing found for “' + esc(SEARCH.term) + '”.</div>';
     }else{
-      if(SEARCH.hits > SEARCH.shown){
+      if(SEARCH.trial && SEARCH.hits > SEARCH.shown){
+        h += '<div class="trialnote">Trial preview — showing ' + SEARCH.shown + ' of ' +
+             SEARCH.hits + ' matches. Full access shows them all.</div>';
+      }else if(SEARCH.hits > SEARCH.shown){
         h += '<div class="none">Showing the first ' + SEARCH.shown + ' of ' +
              SEARCH.hits + ' matches — narrow the words to see fewer.</div>';
       }
@@ -666,6 +685,12 @@ render = function(){
            +  '<span class="schv">▼</span><span class="st">' + esc(s) + '</span>'
            +  '<span class="sn">' + list.length + ' Q</span></div>'
            +  '<div class="sb' + (sc ? ' col' : '') + '">';
+      const capped = TRIAL_CAP[key];
+      if(capped){
+        html += '<div class="trialnote">Trial preview — showing ' + capped.shown +
+                ' of ' + capped.total + ' questions in this sub-topic. ' +
+                'Full access unlocks all ' + capped.total + '.</div>';
+      }
       if(!list.length){
         html += '<div class="none">Nothing here matches the current search or paper filter.</div>';
       }else{
@@ -693,7 +718,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let CODE = null, DEVICE = null;
+let CODE = null, DEVICE = null, IS_TRIAL = false;
 
 /* A per-browser id, so one code can be tied to a couple of machines. */
 function deviceId(){
@@ -741,6 +766,7 @@ async function openBank(code){
     /* Nothing is downloaded here. Sub-topics arrive as they are opened. */
     CODE = code;
     DEVICE = dev;
+    IS_TRIAL = !!data.is_trial;
     D = [];
     QUOTA = { served: data.served_today || 0, limit: data.daily_limit || 0 };
     quotaBar();
@@ -762,6 +788,25 @@ async function openBank(code){
     tag.textContent = who;
     const stats = document.querySelector('.stats');
     if(stats) stats.appendChild(tag);
+
+    /* a trial shows how long is left, and keeps counting down */
+    if(data.is_trial && data.minutes_left != null && stats){
+      const chip = document.createElement('div');
+      chip.className = 'stat trial';
+      stats.appendChild(chip);
+      let mins = data.minutes_left;
+      const paint = () => {
+        if(mins <= 0){
+          chip.innerHTML = 'Trial <b>finished</b>';
+          return;
+        }
+        const h = Math.floor(mins / 60), m = mins % 60;
+        chip.innerHTML = 'Trial: <b>' + (h ? h + ' hr ' : '') + m + ' min</b> left';
+        chip.classList.toggle('low', mins < 120);
+      };
+      paint();
+      setInterval(() => { mins -= 1; paint(); }, 60000);
+    }
     document.getElementById('gate').classList.add('hidden');
     ORDER.forEach(k => collapsed[k] = true);
     fillSubs();
