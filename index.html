@@ -118,6 +118,18 @@ body.edit .del{display:inline-block}
   transform:rotate(-24deg);letter-spacing:6px;text-align:center;white-space:pre-line}
 .wm.on{display:flex}
 .whoami{font-size:.66rem;color:var(--muted);margin-left:auto;white-space:nowrap}
+/* daily allowance readout */
+.qstat b{color:var(--accent)}
+.qstat.low{border-color:#92400e;background:#2a1500}
+.qstat.low b{color:#fbbf24}
+/* a sub-topic that has not been opened yet */
+.tapload{font-size:.66rem;color:var(--muted);opacity:.75;margin-left:8px}
+.sh.busy .tapload{color:var(--accent)}
+.sh.busy{opacity:.7}
+/* messages */
+.bnr{display:none;margin:14px 22px 0;padding:11px 15px;background:#2a1500;
+  border:1px solid #92400e;border-radius:8px;color:#fbbf24;font-size:.8rem;line-height:1.55}
+@media(max-width:640px){.bnr{margin:12px 12px 0}}
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -149,7 +161,7 @@ body.edit .del{display:inline-block}
     <div class="stat">Topics: <b>14</b></div>
     <div class="stat">Sub-topics: <b>150</b></div>
     <div class="stat">Showing: <b id="vis">0</b></div>
-    <div class="stat" id="uvstat" title="Answers worked out by Claude where the paper carried no key">Answered by Claude: <b>0</b></div>
+    <div class="stat qstat" id="qstat"></div>
   </div>
 </header>
 
@@ -237,6 +249,7 @@ body.edit .del{display:inline-block}
   <button class="fb" data-t="raj" style="--c:#fda4af" onclick="sf(this,'raj')">🇮🇳 Rajbhasha (Optional) <em>594</em></button>
 </div>
 
+<div id="bnr" class="bnr"></div>
 <div id="root"></div>
 
 <script>
@@ -399,6 +412,161 @@ if(!D.some(x=>x.c)){
   const b=document.getElementById('uv'); if(b) b.style.display='none';
   const s=document.getElementById('uvstat'); if(s) s.style.display='none';
 }
+const TOPIC_COUNT = {"cw": 376, "dsl": 127, "dw": 120, "ws": 125, "gs": 139, "fin": 503, "estt": 929, "gk": 734, "raj": 594, "stores": 69, "am": 19, "qa": 22, "enhm": 9, "it": 57};
+const SUB_COUNT = {"cw": {"ICF Coaches": 26, "Air Brake System": 86, "Wheels, Axles & Bearings": 38, "Coach & Wagon Design": 9, "Fire Prevention on Trains": 6, "FIBA & Air Spring Suspension": 6, "Couplers, Draw Gear & Train Parting": 30, "LHB Coaches": 42, "CASNUB Bogie & High Speed Mods": 14, "Wagon Stock & Special Wagons": 55, "Trainset — Vande Bharat": 25, "Maintenance Schedules — POH/IOH/ROH": 23, "Water, OBHS & Passenger Amenities": 4, "Carriage & Wagon — General": 7, "Corrosion Repairs & Coach Body": 4, "IRCA Rules & Rejectable Defects": 1}, "dsl": {"Air Brake, Compressors & VCD": 8, "Cooling Water System": 7, "GM / GE Locomotives": 52, "Electric Systems of Locomotive": 15, "Safety Devices & Troubleshooting": 8, "Fuel Economy & Thermal Loading": 3, "Basic Features & Engine Systems": 6, "MEMU / DEMU — Types & Troubleshooting": 8, "Lubricating Oil Consumption": 6, "Preventive Maintenance Schedules": 3, "Fuel Oil System": 7, "DPRS / Distributed Power": 3, "Under Gear, Suspension & Wheels": 1}, "dw": {"G&SR, Signals & Train Working": 15, "Control Office & Rail Madad": 8, "140 T Crane — Construction & Safety": 17, "Accident Classification & Investigation": 31, "ART / ARME Ordering": 13, "Disaster Management & Fire Safety": 10, "ODC & Special Movements": 6, "Working Time Table": 12, "Divisional Working — General": 8}, "ws": {"Wheels, Tyres & Axles — Ultrasonic Testing": 5, "Labour Accountal & Rate Fixing": 8, "Incentive Scheme — CLW & Group": 18, "Process Flow Chart of Production Units": 3, "Paints & Painting Systems": 14, "Welding Processes & Defects": 16, "Casting — Basic Concepts": 9, "Heat Treatment of Ferrous Items": 19, "Machine Tools & Cutting Speeds": 15, "Factory Layout": 2, "CNC Machines": 5, "Manufacturing & Heat Treatment of Wheels": 4, "Machinery & Plant Maintenance": 2, "Workshops — General": 4, "Injury Free Features in Coaches": 1}, "gs": {"Electricity — Ohm, Coulomb & Faraday": 20, "Mechanics — Motion, Work, Energy & Power": 24, "Motors, Dynamos, Transformers & Protection": 2, "General Science — Others": 70, "Heat, Work & Expansion": 9, "Power Supply, AC/DC & Rectification": 6, "IC Engines, Gas Turbines & Supercharging": 8}, "fin": {"Cost Control in Workshops": 10, "Works Programme, Estimates & Plan Heads": 65, "Rules of Allocation & Classification": 65, "Tenders & Contracts for Works": 108, "Delegation of Powers & SOP": 8, "Financial Rules — General": 12, "Budget & Appropriation": 88, "Taxation — GST & Income Tax": 13, "Canons of Financial Propriety": 35, "Financial Statements & Ratios": 2, "Audit, PAC & Draft Paras": 29, "Railway IT — Finance Applications": 2, "Railway Funds — DRF, DF & RRSK": 10, "Financial Control over Stores Expenditure": 23, "Classification of Railway Earnings": 29, "Organisation of the Finance Department": 4}, "estt": {"Factories Act, Labour Laws & RTI": 53, "Recruitment, Training & APAR": 45, "Leave Rules": 113, "Pay, Allowances & Advances": 108, "Organisation of Personnel Dept.": 9, "Pass Rules": 42, "Staff Welfare & Grievances": 29, "Retirement Benefits & Pension": 100, "D&A Rules, 1968": 129, "IT in Personnel — HRMS, IPAS etc.": 40, "HOER & Hours of Work": 24, "Establishment — General": 120, "Conduct Rules, 1966": 49, "Seniority, Promotion & Transfers": 36, "Industrial Relations — PNM, JCM & Unions": 28, "Manpower Planning & Posts": 4}, "gk": {"Railway Organisation & PSUs": 5, "National Schemes & Policies": 13, "Current Affairs & General": 213, "History": 153, "Sports": 34, "Art & Culture": 64, "Indian Railways — Facts & Achievements": 55, "Polity & Constitution": 71, "Geography": 97, "Economy": 29}, "raj": {"Constitutional Provisions": 79, "Awards & Incentive Schemes": 55, "Official Language Rules, 1976": 80, "Hindi Training Courses": 38, "Official Languages Act, 1963": 96, "Committees & Implementation": 122, "Hindi Day & Promotion": 21, "Translation & Vocabulary": 34, "Rajbhasha — General": 4, "Official Language History": 8, "Regions — Ka / Kha / Ga": 45, "Railways Rajbhasha": 12}, "stores": {"Classification of Stores": 15, "Procurement Methods": 24, "Indenting Procedures": 6, "Inventory Control & Stock Verification": 14, "Schedule of Powers": 1, "Procedure of Drawal of Stores": 6, "Incoming Inspection Requirements": 1, "Stores — General": 2}, "am": {"Hardness": 3, "Corrosion": 1, "Fatigue": 2, "Stress & Strain": 4, "Surface Finish": 1, "Bearings": 3, "Engineering Materials & Properties": 5}, "qa": {"Geometry — Area & Volume": 5, "Arithmetic & General Aptitude": 7, "Fractions, Percentage & Ratio": 4, "Algebra & Equations": 1, "Sampling, Averages & Statistics": 5}, "enhm": {"Water Act & Air Act": 2, "Hazardous Waste Management": 2, "Green Initiatives & Water Policy": 1, "Solid Waste Management Rules": 1, "Consent to Establish / Operate": 1, "EnHM — General": 2}, "it": {"Networking & Internet": 10, "PC Hardware & Storage": 5, "Railway IT Portals & Applications": 9, "IT Policy & Data Protection": 1, "MS Office — Word, Excel, PowerPoint": 4, "Information Technology — General": 28}};
+const TOTAL = 3823;
+/* ============ on-demand rendering ============
+   The bank is no longer downloaded at sign-in. The page is built from the
+   counts baked in at build time, and a sub-topic's questions are fetched the
+   first time someone opens it. Everything fetched counts against the code's
+   daily allowance, which the database enforces. */
+
+const LOADED = {};          // "topic|sub" -> true once its questions are here
+let QUOTA = { served: 0, limit: 0 };
+
+function quotaBar(){
+  const el = document.getElementById('qstat');
+  if(!el) return;
+  const left = Math.max(0, QUOTA.limit - QUOTA.served);
+  el.innerHTML = 'Today: <b>' + QUOTA.served + '</b> / ' + QUOTA.limit +
+                 ' &nbsp;·&nbsp; ' + left + ' left';
+  el.classList.toggle('low', QUOTA.limit && left < QUOTA.limit * 0.15);
+}
+
+async function loadSub(k, s){
+  const key = k + '|' + s;
+  if(LOADED[key] === 'loading') return;
+  LOADED[key] = 'loading';
+  render();
+  try{
+    const { data, error } = await sb.rpc('fetch_subtopic', {
+      p_code: CODE, p_device: DEVICE, p_topic: k, p_sub: s });
+    if(error) throw error;
+    if(!data || !data.ok){
+      LOADED[key] = false;
+      if(data && data.reason === 'daily_limit'){
+        QUOTA = { served: data.served_today, limit: data.daily_limit };
+        banner('You have opened ' + data.served_today + ' questions today, which is the ' +
+               'daily limit of ' + data.daily_limit +
+               '. It resets at midnight — the topics you have already opened stay available.');
+      }else{
+        banner('Could not open that section. Try signing in again.');
+      }
+      quotaBar(); render();
+      return;
+    }
+    QUOTA = { served: data.served_today, limit: data.daily_limit };
+    const rows = data.rows || [];
+    rows.forEach(r => {
+      if(D.some(x => x.i === r.id)) return;
+      D.push({
+        i: r.id, t: r.topic_key, s: r.sub_topic, p: r.paper_code,
+        n: String(r.qno == null ? '' : r.qno),
+        q: r.question,
+        o: (typeof r.options === 'string') ? JSON.parse(r.options) : r.options,
+        a: (r.answer_index == null ? -1 : r.answer_index),
+        e: r.note || ''
+      });
+    });
+    LOADED[key] = true;
+    scollapsed[key] = false;
+  }catch(err){
+    LOADED[key] = false;
+    banner('Could not reach the server. Check your internet and try again.');
+  }
+  quotaBar();
+  render();
+}
+
+function banner(msg){
+  const el = document.getElementById('bnr');
+  if(!el) return;
+  el.textContent = msg;
+  el.style.display = msg ? 'block' : 'none';
+  if(msg) setTimeout(() => { el.style.display = 'none'; }, 9000);
+}
+
+/* replaces the offline page's render(): topics and sub-topics come from the
+   counts, cards only from what has actually been fetched */
+render = function(){
+  const root = document.getElementById('root');
+  const paper = document.getElementById('pf').value;
+  const loadedShown = D.filter(it =>
+      (filt === 'all' || it.t === filt) &&
+      (filt === 'all' || subFilt === 'all' || it.s === subFilt) &&
+      (paper === 'all' || it.p === paper) &&
+      (!srch || it.q.toLowerCase().includes(srch) ||
+                it.o.some(o => o.toLowerCase().includes(srch))));
+
+  document.getElementById('tot').textContent = TOTAL;
+  document.getElementById('vis').textContent = loadedShown.length;
+
+  let html = '';
+  let anyOpen = false;
+  ORDER.forEach(k => {
+    if(filt !== 'all' && k !== filt) return;
+    const m = META[k];
+    const tcount = TOPIC_COUNT[k] || 0;
+    if(!tcount) return;
+    if(!collapsed[k]) anyOpen = true;
+    html += '<div class="ps" style="--pc:' + m.c + '">'
+         +  '<div class="ph' + (collapsed[k] ? ' chcol' : '') + '" onclick="tog(\'' + k + '\')">'
+         +  '<span class="chv">▼</span>'
+         +  '<span class="pt">' + m.i + ' ' + esc(m.l) + '</span>'
+         +  '<span class="psec">' + esc(m.s) + '</span>'
+         +  '<span class="pc">' + tcount + ' Q</span>'
+         +  '</div><div class="pb' + (collapsed[k] ? ' col' : '') + '">';
+
+    let n = 0;
+    m.sub.forEach(s => {
+      if(subFilt !== 'all' && s !== subFilt) return;
+      const cnt = (SUB_COUNT[k] || {})[s] || 0;
+      const key = k + '|' + s;
+      if(!cnt){
+        if(m.un.indexOf(s) >= 0 && !srch && paper === 'all'){
+          html += '<div class="sh empty"><span class="schv">▸</span><span class="st">' + esc(s)
+               +  '</span><span class="sn zero">0 Q</span></div>'
+               +  '<div class="none">No question asked from this syllabus sub-topic.</div>';
+        }
+        return;
+      }
+      const state = LOADED[key];
+      const safe = s.replace(/'/g, "\\'");
+      if(state !== true){
+        const label = state === 'loading' ? 'opening…' : 'tap to open';
+        html += '<div class="sh' + (state === 'loading' ? ' busy' : '')
+             +  '" onclick="loadSub(\'' + k + '\',\'' + safe + '\')">'
+             +  '<span class="schv">▸</span><span class="st">' + esc(s) + '</span>'
+             +  '<span class="tapload">' + label + '</span>'
+             +  '<span class="sn">' + cnt + ' Q</span></div>';
+        return;
+      }
+      const list = D.filter(it => it.t === k && it.s === s &&
+          (paper === 'all' || it.p === paper) &&
+          (!srch || it.q.toLowerCase().includes(srch) ||
+                    it.o.some(o => o.toLowerCase().includes(srch))));
+      const sc = scollapsed[key];
+      html += '<div class="sh' + (sc ? ' scol' : '') + '" onclick="stog(event,\'' + k + '\',\'' + safe + '\')">'
+           +  '<span class="schv">▼</span><span class="st">' + esc(s) + '</span>'
+           +  '<span class="sn">' + list.length + ' Q</span></div>'
+           +  '<div class="sb' + (sc ? ' col' : '') + '">';
+      if(!list.length){
+        html += '<div class="none">Nothing here matches the current search or paper filter.</div>';
+      }else{
+        list.forEach(it => { n++; html += card(it, n); });
+      }
+      html += '</div>';
+    });
+    html += '</div></div>';
+  });
+
+  if(!anyOpen){
+    html = '<div class="hint">Open a topic, then tap a sub-topic to load its questions. '
+         + 'Only what you open counts against your daily allowance.</div>' + html;
+  }
+  root.innerHTML = html;
+};
+
 /* ================= access gate ================= */
 /* Fill these two in from Supabase → Project Settings → API.
    The anon key is meant to be public: on its own it reads nothing, because the
@@ -407,6 +575,8 @@ const SUPABASE_URL = 'https://udcplxwchwdttnesmqxb.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkY3BseHdjaHdkdHRuZXNtcXhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MzQ1MTYsImV4cCI6MjEwNTUxMDUxNn0.JGlH_kBLpoMSUWTRJucvotupVCZObJ6RgBJhpCJMNlU';
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let CODE = null, DEVICE = null;
 
 /* A per-browser id, so one code can be tied to a couple of machines. */
 function deviceId(){
@@ -446,46 +616,12 @@ async function openBank(code){
       btn.disabled = false;
       return;
     }
-    /* The API returns at most 1,000 rows per request, so ask for the bank in
-       pages until a short page comes back. */
-    gateMsg('Loading questions…', 'ok');
-    const PAGE = 1000;
-    let rows = [], from = 0;
-    while(true){
-      const { data: page, error: e2 } = await sb
-        .rpc('fetch_questions', { p_code: code, p_device: dev })
-        .range(from, from + PAGE - 1);
-      if(e2) throw e2;
-      if(!page || !page.length) break;
-      rows = rows.concat(page);
-      gateMsg('Loading questions… ' + rows.length, 'ok');
-      if(page.length < PAGE) break;
-      from += PAGE;
-      if(from > 100000) break;              // guard against a runaway loop
-    }
-    if(!rows.length){
-      gateMsg('No questions came back. Tell the administrator.', 'err');
-      btn.disabled = false;
-      return;
-    }
-    /* Confirm nothing was lost on the way. */
-    try{
-      const { data: total } = await sb.rpc('question_count',
-        { p_code: code, p_device: dev });
-      if(total && rows.length < total){
-        gateMsg('Loaded ' + rows.length + ' of ' + total +
-                ' questions — check your connection and reload.', 'err');
-      }
-    }catch(e){ /* the count is a nicety, not a requirement */ }
-
-    D = rows.map(r => ({
-      i: r.id, t: r.topic_key, s: r.sub_topic, p: r.paper_code,
-      n: String(r.qno == null ? '' : r.qno),
-      q: r.question,
-      o: (typeof r.options === 'string') ? JSON.parse(r.options) : r.options,
-      a: (r.answer_index == null ? -1 : r.answer_index),
-      e: r.note || ''
-    }));
+    /* Nothing is downloaded here. Sub-topics arrive as they are opened. */
+    CODE = code;
+    DEVICE = dev;
+    D = [];
+    QUOTA = { served: data.served_today || 0, limit: data.daily_limit || 0 };
+    quotaBar();
     try { sessionStorage.setItem('ame_code', code); } catch(e){}
 
     const who = (data.holder || '').trim();
