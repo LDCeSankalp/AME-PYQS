@@ -1,8 +1,8 @@
 name: MCQ access alerts
 
 # Checks for alerts every hour and sends them to Telegram.
-# It also doubles as a keep-alive: a free Supabase project pauses after about a
-# week with no activity, and this touches it 24 times a day.
+# It doubles as a keep-alive: a free Supabase project pauses after about a week
+# with no activity, and this touches it 24 times a day.
 on:
   schedule:
     - cron: '17 * * * *'
@@ -12,6 +12,8 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
       - name: Fetch alerts and notify
         env:
           SUPABASE_URL: https://udcplxwchwdttnesmqxb.supabase.co
@@ -20,42 +22,39 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          set -euo pipefail
+          set -eo pipefail
 
-          alerts=$(curl -s -X POST "$SUPABASE_URL/rest/v1/rpc/take_alerts" \
+          if [ -z "$SUPABASE_ANON_KEY" ] || [ -z "$ALERT_TOKEN" ]; then
+            echo "SUPABASE_ANON_KEY or ALERT_TOKEN is missing from the repository secrets"
+            exit 1
+          fi
+
+          curl -s -X POST "$SUPABASE_URL/rest/v1/rpc/take_alerts" \
             -H "apikey: $SUPABASE_ANON_KEY" \
             -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
             -H "Content-Type: application/json" \
-            -d "{\"p_token\":\"$ALERT_TOKEN\"}")
+            -d "{\"p_token\":\"$ALERT_TOKEN\"}" -o alerts.json
 
-          count=$(printf '%s' "$alerts" | python3 -c 'import json,sys; print(len(json.load(sys.stdin)))')
-          echo "alerts waiting: $count"
-          if [ "$count" = "0" ]; then
-            echo "nothing to report"
+          echo "response: $(head -c 200 alerts.json)"
+
+          python3 scripts/alert_message.py < alerts.json > message.txt
+
+          if [ ! -s message.txt ]; then
+            echo "no alerts to report"
             exit 0
           fi
 
-          msg=$(printf '%s' "$alerts" | python3 - <<'PY'
-import json, sys
-rows = json.load(sys.stdin)
-KIND = {
-    'daily_limit':    'hit the daily limit',
-    'device_blocked': 'tried an extra device',
-}
-lines = ['*MCQ bank - %d alert(s)*' % len(rows), '']
-for r in rows:
-    who = r.get('holder') or 'unassigned'
-    when = (r.get('created_at') or '')[11:16]
-    lines.append('`%s`  (%s)' % (r.get('code'), who))
-    lines.append('%s - %s' % (KIND.get(r.get('kind'), r.get('kind')), r.get('detail') or ''))
-    lines.append('_at %s UTC_' % when)
-    lines.append('')
-print('\n'.join(lines))
-PY
-          )
+          if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
+            echo "alerts found but the Telegram secrets are missing:"
+            cat message.txt
+            exit 1
+          fi
 
           curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
             --data-urlencode "chat_id=$TELEGRAM_CHAT_ID" \
-            --data-urlencode "text=$msg" \
-            --data-urlencode "parse_mode=Markdown" > /dev/null
-          echo "sent $count alert(s) to Telegram"
+            --data-urlencode "text@message.txt" \
+            --data-urlencode "parse_mode=Markdown" -o tg.json
+
+          echo "telegram said: $(head -c 200 tg.json)"
+          grep -q '"ok":true' tg.json || { echo "Telegram rejected the message"; exit 1; }
+          echo "alert sent"
