@@ -118,6 +118,8 @@ body.edit .del{display:inline-block}
   transform:rotate(-24deg);letter-spacing:6px;text-align:center;white-space:pre-line}
 .wm.on{display:flex}
 .whoami{font-size:.66rem;color:var(--muted);margin-left:auto;white-space:nowrap}
+.signout{font:inherit;font-size:.66rem;color:var(--muted);background:transparent;border:1px solid var(--border,#2a3346);border-radius:6px;padding:2px 8px;cursor:pointer;white-space:nowrap}
+.signout:hover{color:var(--text,#e5e7eb)}
 /* daily allowance readout */
 .qstat b{color:var(--accent)}
 .qstat.low{border-color:#92400e;background:#2a1500}
@@ -826,6 +828,18 @@ async function openBank(code){
     tag.textContent = who;
     const stats = document.querySelector('.stats');
     if(stats) stats.appendChild(tag);
+
+    /* switching codes - e.g. from a trial code to a paid one. Only the saved
+       code is forgotten; the device id stays, so the device count is unchanged. */
+    const out = document.createElement('button');
+    out.className = 'signout';
+    out.textContent = 'Change code';
+    out.addEventListener('click', () => {
+      if(!confirm('Sign out and enter a different code?')) return;
+      try { localStorage.removeItem('ame_code'); } catch(e){}
+      location.reload();
+    });
+    if(stats) stats.appendChild(out);
 
     /* a trial shows how long is left, and keeps counting down */
     if(data.is_trial && data.minutes_left != null && stats){
