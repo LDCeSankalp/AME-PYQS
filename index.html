@@ -142,9 +142,26 @@ body.edit .del{display:inline-block}
 /* trial sample notice */
 .trialnote{padding:9px 18px;background:#04151f;border:1px solid #0369a1;border-top:none;
   color:#7dd3fc;font-size:.75rem;line-height:1.55}
+/* WhatsApp contact */
+.gateor{margin-top:16px;font-size:.72rem;color:var(--muted);text-align:center}
+.wabtn{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;padding:10px 14px;
+  background:#25d366;color:#06240f;border-radius:8px;font-weight:700;font-size:.9rem;text-decoration:none}
+.wabtn:hover{background:#1ebe5b}
+.waico{font-size:1.05rem;line-height:1}
+.wabtn.wasmall{display:inline-flex;margin:0;padding:3px 10px;font-size:.7rem;border-radius:6px;white-space:nowrap}
+.trialnote .wabtn{display:inline-flex;margin:6px 0 0;padding:5px 12px;font-size:.78rem}
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta name="description" content="3,454 previous year MCQs from 38 papers, sorted by ADME/AWM LDCE syllabus topic and sub-topic. Search, hide-answers mode, free 1-day trial.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ldcesankalp.github.io/AME-PYQS/">
+<meta property="og:title" content="ADME / AWM LDCE Question Bank">
+<meta property="og:description" content="3,454 previous year MCQs from 38 papers, sorted by ADME/AWM LDCE syllabus topic and sub-topic. Search, hide-answers mode, free 1-day trial.">
+<meta property="og:image" content="https://ldcesankalp.github.io/AME-PYQS/preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 </head>
 <body>
 <div id="gate">
@@ -157,8 +174,10 @@ body.edit .del{display:inline-block}
            spellcheck="false" maxlength="20">
     <button id="gatego" class="gatebtn">Open</button>
     <div id="gatemsg" class="gatemsg"></div>
+    <div class="gateor">No code yet? Ask for a free 1-day trial.</div>
+    <a id="gatewa" class="wabtn" target="_blank" rel="noopener" href="#"><span class="waico">✆</span><span>Get access on WhatsApp</span></a>
     <div class="gatefoot">Your code is issued to you personally and works on one device.
-      Changing phone? Message us and we will re-pair it.</div>
+      Changing phone? Message us on WhatsApp and we will re-pair it. No calls please.</div>
   </div>
 </div>
 <div id="wm" class="wm"></div>
@@ -660,7 +679,8 @@ render = function(){
     }else{
       if(SEARCH.trial && SEARCH.hits > SEARCH.shown){
         h += '<div class="trialnote">Trial preview — showing ' + SEARCH.shown + ' of ' +
-             SEARCH.hits + ' matches. Full access shows them all.</div>';
+             SEARCH.hits + ' matches. Full access shows them all.<br>' +
+             waButton('Buy full access on WhatsApp', waBuyText()) + '</div>';
       }else if(SEARCH.hits > SEARCH.shown){
         h += '<div class="none">Showing the first ' + SEARCH.shown + ' of ' +
              SEARCH.hits + ' matches — narrow the words to see fewer.</div>';
@@ -729,10 +749,11 @@ render = function(){
       if(capped){
         html += '<div class="trialnote">Trial preview — showing ' + capped.shown +
                 ' of ' + capped.total + ' questions in this sub-topic. ' +
-                'Full access unlocks all ' + capped.total + '.</div>';
+                'Full access unlocks all ' + capped.total + '.<br>' +
+                waButton('Buy full access on WhatsApp', waBuyText()) + '</div>';
       }
       if(!list.length){
-        html += '<div class="none">Nothing here matches the current search or paper filter.</div>';
+        html += '<div class="none">No questions here yet.</div>';
       }else{
         list.forEach(it => { n++; html += card(it, n); });
       }
@@ -759,6 +780,20 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let CODE = null, DEVICE = null, IS_TRIAL = false;
+
+/* WhatsApp contact - the only way to buy or renew. Country code first, no +. */
+const WA_NUMBER = '917731020189';
+function waLink(text){
+  return 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(text);
+}
+function waButton(label, text){
+  return '<a class="wabtn" target="_blank" rel="noopener" href="' + waLink(text) + '">'
+       + '<span class="waico">✆</span>' + label + '</a>';
+}
+const WA_NEW = 'AME\nName: \nWhatsApp number: ';
+function waBuyText(){
+  return 'AME - I want full access for 1 year.' + (CODE ? '\nMy trial code: ' + CODE : '') + '\nName: ';
+}
 
 /* A per-browser id, so one code can be tied to a couple of machines. */
 function deviceId(){
@@ -800,6 +835,17 @@ async function openBank(code){
         try { localStorage.removeItem('ame_code'); } catch(e){}
       }
       gateMsg(REASONS[why] || 'Could not open the bank.', 'err');
+      /* point the WhatsApp button at the right request */
+      const wa = document.getElementById('gatewa');
+      if(wa){
+        if(why === 'expired'){
+          wa.href = waLink('AME - my code has expired, I want full access for 1 year.\nCode: ' + code + '\nName: ');
+          wa.lastChild.textContent = 'Renew on WhatsApp';
+        }else if(why === 'device_limit'){
+          wa.href = waLink('AME - please re-pair my code to my new device.\nCode: ' + code + '\nName: ');
+          wa.lastChild.textContent = 'Re-pair my code on WhatsApp';
+        }
+      }
       btn.disabled = false;
       return;
     }
@@ -858,6 +904,13 @@ async function openBank(code){
       };
       paint();
       setInterval(() => { mins -= 1; paint(); }, 60000);
+      const buy = document.createElement('a');
+      buy.className = 'wabtn wasmall';
+      buy.target = '_blank';
+      buy.rel = 'noopener';
+      buy.href = waLink(waBuyText());
+      buy.textContent = 'Buy full access';
+      stats.appendChild(buy);
     }
     document.getElementById('gate').classList.add('hidden');
     ORDER.forEach(k => collapsed[k] = true);
@@ -881,6 +934,8 @@ async function openBank(code){
     openBank(c);
   });
   input.addEventListener('keydown', e => { if(e.key === 'Enter') btn.click(); });
+  const wa = document.getElementById('gatewa');
+  if(wa) wa.href = waLink(WA_NEW);
   let saved = null;
   try { saved = localStorage.getItem('ame_code'); } catch(e){}
   if(saved){ input.value = saved; openBank(saved); }
