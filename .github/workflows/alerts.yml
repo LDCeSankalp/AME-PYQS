@@ -1,11 +1,13 @@
 name: MCQ access alerts
 
-# Checks for alerts every hour and sends them to Telegram.
+# Checks for alerts once a day, 9:00 am IST (03:30 UTC), and sends a Telegram
+# message - the alerts, or a short "all quiet" line so you know it ran.
+# GitHub may start scheduled runs a little late.
 # It doubles as a keep-alive: a free Supabase project pauses after about a week
-# with no activity, and this touches it 24 times a day.
+# with no activity. Run it by hand any time from the Actions tab.
 on:
   schedule:
-    - cron: '17 * * * *'
+    - cron: '30 3 * * *'
   workflow_dispatch:
 
 jobs:
