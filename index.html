@@ -70,7 +70,7 @@ select.sel{background:#1a2035;border:1px solid var(--border);border-radius:7px;p
 body.hide .op.c{background:#141c2e;border-color:#1e2840;color:var(--muted);font-weight:400}
 body.hide .op.c .tick{display:none}
 body.hide .exp{display:none}
-.exp{background:#0e1626;border-left:2px solid var(--correct);border-radius:0 5px 5px 0;padding:6px 10px;font-size:.74rem;color:#93a3bd;line-height:1.5}
+.exp{background:#0e1626;border-left:2px solid var(--correct);border-radius:0 5px 5px 0;padding:6px 10px;font-size:.74rem;color:#93a3bd;line-height:1.5;white-space:pre-line}
 .nores{text-align:center;padding:60px 20px;color:var(--muted);font-size:.9rem}
 .noans{background:#2a1500;border:1px solid #92400e;color:#fbbf24;border-radius:5px;padding:5px 9px;font-size:.72rem;margin-bottom:6px}
 .none{padding:9px 18px;background:#101725;border:1px solid var(--border);border-top:none;color:#6b7793;font-size:.74rem;font-style:italic}
@@ -791,6 +791,7 @@ function waButton(label, text){
        + '<span class="waico">✆</span>' + label + '</a>';
 }
 const WA_NEW = 'AME\nName: \nWhatsApp number: ';
+
 function waBuyText(){
   return 'AME - I want full access for 1 year.' + (CODE ? '\nMy trial code: ' + CODE : '') + '\nName: ';
 }
