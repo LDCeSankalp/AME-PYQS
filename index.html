@@ -151,20 +151,36 @@ body.edit .del{display:inline-block}
 .wabtn.wasmall{display:inline-flex;margin:0;padding:3px 10px;font-size:.7rem;border-radius:6px;white-space:nowrap}
 .trialnote .wabtn{display:inline-flex;margin:6px 0 0;padding:5px 12px;font-size:.78rem}
 
-/* notices from the admin */
-#notices:empty{display:none}
-.ntc{display:flex;align-items:flex-start;gap:10px;margin:12px 22px 0;padding:10px 12px 10px 14px;
-  background:#0b1a33;border:1px solid #1d4ed8;border-radius:8px;color:#bfdbfe;font-size:.8rem;line-height:1.55}
-.ntc.reply{background:#062016;border-color:#15803d;color:#bbf7d0}
-.ntc.renew{background:#2a1500;border-color:#92400e;color:#fde68a}
-.ntcico{font-size:1rem;line-height:1.3}
-.ntctx{flex:1;min-width:0;overflow-wrap:anywhere}
-.ntctx .wabtn{display:inline-flex;margin:6px 0 0;padding:4px 12px;font-size:.76rem}
-.ntcbtn{display:inline-block;margin-left:6px;padding:2px 10px;border-radius:6px;background:#1d4ed8;color:#fff;
-  font-weight:600;text-decoration:none;font-size:.75rem}
-.ntcx{background:none;border:none;color:inherit;opacity:.7;font-size:.95rem;cursor:pointer;padding:0 2px;line-height:1}
-.ntcx:hover{opacity:1}
-@media(max-width:640px){.ntc{margin:10px 12px 0}}
+/* notice ticker */
+.tkrwrap{display:none}
+.tkrwrap.on{display:block;margin-top:10px}
+#gatetkr.on{margin:14px 0 2px;text-align:left}
+.tkr{display:flex;align-items:stretch;overflow:hidden;border-radius:9px;
+  background:linear-gradient(90deg,#1a1033,#0c1a33 45%,#0b2a2a);
+  border:1px solid rgba(245,158,11,.55);box-shadow:0 0 14px rgba(245,158,11,.18)}
+.tklbl{flex:none;display:flex;align-items:center;gap:6px;padding:0 11px;
+  background:linear-gradient(135deg,#f59e0b,#ef4444);color:#1a0b00;font-weight:800;
+  font-size:.66rem;letter-spacing:.08em}
+.tkdot{width:7px;height:7px;border-radius:50%;background:#fff;animation:tkpulse 1.4s infinite}
+@keyframes tkpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+.tkview{flex:1;min-width:0;overflow:hidden;position:relative;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 18px,#000 calc(100% - 18px),transparent);
+          mask-image:linear-gradient(90deg,transparent,#000 18px,#000 calc(100% - 18px),transparent)}
+.tktrack{display:inline-flex;align-items:center;white-space:nowrap;padding:7px 0;
+  animation:tkscroll 30s linear infinite;will-change:transform}
+.tkr:hover .tktrack,.tkr:active .tktrack{animation-play-state:paused}
+@keyframes tkscroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tki{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;color:#e0e7ff;padding:0 4px}
+.tki b{color:#fde68a}
+.tki.reply{color:#bbf7d0}
+.tki.renew{color:#fde68a}
+.tkic{font-size:.95rem}
+.tksep{color:#f59e0b;opacity:.7;padding:0 14px;font-size:.7rem}
+.tkbtn{display:inline-block;margin-left:4px;padding:2px 10px;border-radius:20px;background:#f59e0b;
+  color:#1a0b00;font-weight:700;font-size:.7rem;text-decoration:none}
+.tkbtn.wa{background:#25d366;color:#06240f}
+@media (prefers-reduced-motion:reduce){.tktrack{animation-duration:90s!important}}
+@media(max-width:640px){.tki{font-size:.76rem}.tklbl{padding:0 8px;font-size:.6rem}}
 /* report a mistake */
 .rep{margin-left:auto;background:none;border:1px solid #334155;color:var(--muted);border-radius:5px;
   font-size:.66rem;padding:2px 8px;cursor:pointer;white-space:nowrap}
@@ -187,7 +203,7 @@ body.edit .del{display:inline-block}
   <div class="gatebox">
     <div class="gatelogo">📚</div>
     <div class="gatetitle">AME / AWM LDCE Question Bank</div>
-    <div class="gatesub">3,731 MCQs from 38 papers, sorted by syllabus topic</div>
+    <div id="gatetkr" class="tkrwrap"></div>
     <label class="gatelabel" for="codein">Enter your access code</label>
     <input id="codein" class="gateinput" placeholder="AME-XXXX-XXXX" autocomplete="off"
            spellcheck="false" maxlength="20">
@@ -204,7 +220,7 @@ body.edit .del{display:inline-block}
 
 <header>
   <div class="h1">📚 AME MCQs — Segregated by Syllabus Topic &amp; Sub-topic</div>
-  <div class="h2">3731 MCQs from 38 papers, sorted into the ADME/AWM LDCE syllabus and its sub-topics &mdash; AME 30% &amp; 70% LDCE 2022-2025 · ADME/AWM LDCE 2026 · NAIR 2022-2024 · Other departments 70% LDCE 2025</div>
+  <div id="apptkr" class="tkrwrap"></div>
   <div class="stats">
     <div class="stat">Total MCQs: <b id="tot">0</b></div>
     <div class="stat">Papers: <b>38</b></div>
@@ -243,7 +259,6 @@ body.edit .del{display:inline-block}
   <button class="fb" data-t="raj" style="--c:#fda4af" onclick="sf(this,'raj')">🇮🇳 Rajbhasha (Optional) <em>595</em></button>
 </div>
 
-<div id="notices"></div>
 <div id="bnr" class="bnr"></div>
 <div id="root"></div>
 
@@ -948,26 +963,54 @@ async function openBank(code){
   }
 }
 
-/* ================= notices from the admin ================= */
-/* Shown at the top after sign-in: your posted notices, replies to this person's
-   reports, and a renewal reminder in the last 15 days of a paid code. A notice
-   the person closes stays closed on this device. */
-function seenNotices(){
-  try { return JSON.parse(localStorage.getItem('ame_seen') || '[]'); } catch(e){ return []; }
-}
-function markSeen(key){
-  const s = seenNotices();
-  if(s.indexOf(key) < 0) s.push(key);
-  try { localStorage.setItem('ame_seen', JSON.stringify(s.slice(-200))); } catch(e){}
-}
+/* ================= notice ticker ================= */
+/* A scrolling strip under the title - on the sign-in screen (notices for
+   everyone) and in the app header (the same, plus this person's replies and a
+   renewal reminder in the last 15 days of a paid code). It pauses when touched. */
+let TICK_PUBLIC = [], TICK_PERSONAL = [];
+
 function fmtDate(iso){
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
   if(!m) return iso || '';
   return +m[3] + ' ' + ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m[2] - 1] + ' ' + m[1];
 }
+function noticeItem(n){
+  let html = esc(n.message);
+  if(n.button_url && /^https:\/\//i.test(n.button_url))
+    html += ' <a class="tkbtn" target="_blank" rel="noopener" href="' + esc(n.button_url) + '">'
+          + esc(n.button_text || 'Open') + ' &rsaquo;</a>';
+  return { cls: 'note', icon: '📢', html: html };
+}
+function paintTicker(id, items){
+  const el = document.getElementById(id);
+  if(!el) return;
+  if(!items.length){ el.innerHTML = ''; el.classList.remove('on'); return; }
+  const one = items.map(x => '<span class="tki ' + x.cls + '"><span class="tkic">' + x.icon + '</span>'
+                         + x.html + '</span>').join('<span class="tksep">✦</span>');
+  el.innerHTML = '<div class="tkr"><span class="tklbl"><span class="tkdot"></span>UPDATES</span>'
+               + '<div class="tkview"><div class="tktrack">' + one + '<span class="tksep">✦</span>'
+               + one + '<span class="tksep">✦</span></div></div></div>';
+  el.classList.add('on');
+  /* same reading speed whatever the length: about 70 px a second */
+  const track = el.querySelector('.tktrack');
+  requestAnimationFrame(() => {
+    const secs = Math.max(14, Math.round(track.scrollWidth / 2 / 70));
+    track.style.animationDuration = secs + 's';
+  });
+}
+function paintTickers(){
+  paintTicker('gatetkr', TICK_PUBLIC);
+  paintTicker('apptkr', TICK_PERSONAL.length ? TICK_PERSONAL : TICK_PUBLIC);
+}
+async function loadPublicNotices(){
+  try{
+    const r = await sb.rpc('get_public_notices');
+    if(r.error) throw r.error;
+    TICK_PUBLIC = (r.data || []).map(noticeItem);
+    paintTickers();
+  }catch(e){ console.warn('public notices not loaded', e); }
+}
 async function loadNotices(){
-  const box = document.getElementById('notices');
-  if(!box) return;
   let data = null;
   try{
     const r = await sb.rpc('get_notices', { p_code: CODE, p_device: DEVICE });
@@ -976,37 +1019,23 @@ async function loadNotices(){
   }catch(e){ console.warn('notices not loaded', e); return; }
   if(!data || !data.ok) return;
   const items = [];
-  (data.notices || []).forEach(n => {
-    let html = esc(n.message);
-    if(n.button_url && /^https:\/\//i.test(n.button_url))
-      html += ' <a class="ntcbtn" target="_blank" rel="noopener" href="' + esc(n.button_url) + '">'
-            + esc(n.button_text || 'Open') + '</a>';
-    items.push({ key: 'n' + n.id, cls: '', icon: '📢', html: html });
-  });
+  if(!data.trial && data.days_left != null && data.days_left <= 15 && data.days_left >= 0){
+    items.push({ cls: 'renew', icon: '⏳',
+                 html: 'Your access ends on <b>' + fmtDate(data.expires_on) + '</b> ('
+                     + (data.days_left === 0 ? 'today' : data.days_left + ' day' + (data.days_left > 1 ? 's' : '') + ' left')
+                     + ') <a class="tkbtn wa" target="_blank" rel="noopener" href="'
+                     + waLink('AME - I want to renew my access for 1 year.\nCode: ' + CODE + '\nName: ')
+                     + '">Renew on WhatsApp &rsaquo;</a>' });
+  }
   (data.replies || []).forEach(r => {
     const where = r.paper_code ? (PAPER_LABELS[r.paper_code] || r.paper_code) + ' · Q' + r.qno
                                : 'question id ' + r.question_id;
-    items.push({ key: 'r' + r.id, cls: ' reply', icon: '✉️',
+    items.push({ cls: 'reply', icon: '✉️',
                  html: 'Reply to your report on <b>' + esc(where) + '</b>: ' + esc(r.reply) });
   });
-  if(!data.trial && data.days_left != null && data.days_left <= 15 && data.days_left >= 0){
-    const today = new Date().toISOString().slice(0, 10);
-    items.push({ key: 'x' + today, cls: ' renew', icon: '⏳',
-                 html: 'Your access ends on <b>' + fmtDate(data.expires_on) + '</b> ('
-                     + (data.days_left === 0 ? 'today' : data.days_left + ' day' + (data.days_left > 1 ? 's' : '') + ' left')
-                     + '). ' + waButton('Renew on WhatsApp',
-                       'AME - I want to renew my access for 1 year.\nCode: ' + CODE + '\nName: ') });
-  }
-  const seen = seenNotices();
-  box.innerHTML = items.filter(x => seen.indexOf(x.key) < 0).map(x =>
-      '<div class="ntc' + x.cls + '" data-k="' + x.key + '"><span class="ntcico">' + x.icon + '</span>'
-    + '<div class="ntctx">' + x.html + '</div>'
-    + '<button class="ntcx" title="Close">✕</button></div>').join('');
-  box.querySelectorAll('.ntcx').forEach(b => b.addEventListener('click', () => {
-    const el = b.closest('.ntc');
-    markSeen(el.getAttribute('data-k'));
-    el.remove();
-  }));
+  (data.notices || []).forEach(n => items.push(noticeItem(n)));
+  TICK_PERSONAL = items;
+  paintTickers();
 }
 
 /* ================= report a mistake ================= */
@@ -1041,6 +1070,7 @@ async function reportQ(id){
   input.addEventListener('keydown', e => { if(e.key === 'Enter') btn.click(); });
   const wa = document.getElementById('gatewa');
   if(wa) wa.href = waLink(WA_NEW);
+  loadPublicNotices();
   let saved = null;
   try { saved = localStorage.getItem('ame_code'); } catch(e){}
   if(saved){ input.value = saved; openBank(saved); }
