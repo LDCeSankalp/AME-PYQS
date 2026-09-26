@@ -13,6 +13,7 @@ KIND = {
     'device_blocked': 'tried to use an extra device',
     'revoked':        'used a switched-off code',
     'expired':        'used an expired code',
+    'report':         'reported a mistake',
 }
 
 
