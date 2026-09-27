@@ -1,9 +1,10 @@
 {
   "name": "ADME / AWM LDCE Question Bank",
   "short_name": "LDCE Sankalp",
+  "id": "./",
   "start_url": "./",
   "scope": "./",
-  "display": "browser",
+  "display": "minimal-ui",
   "background_color": "#0a1628",
   "theme_color": "#0a1628",
   "icons": [
